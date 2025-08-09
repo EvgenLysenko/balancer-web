@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import TopPanel from '../top-panel/TopPanel';
 
 import './style.css';
 
@@ -12,7 +13,7 @@ export const Main = () => {
 
     return (
         <div className="main">
-            test
+            <TopPanel />
         </div>
     );
 };

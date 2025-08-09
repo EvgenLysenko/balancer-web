@@ -1,0 +1,7 @@
+.top-panel-container {
+    .top-panel {
+        padding: 10px;
+        display: flex;
+        justify-content: flex-end;
+    }
+}

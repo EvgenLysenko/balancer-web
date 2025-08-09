@@ -1,7 +1,7 @@
 {
-  "name": "zag_map",
+  "name": "balancer",
   "version": "0.1.0",
-  "homepage": "map", 
+  "homepage": "balancer", 
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.3.6",
