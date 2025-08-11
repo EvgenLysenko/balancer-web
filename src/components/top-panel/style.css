@@ -3,5 +3,12 @@
         padding: 10px;
         display: flex;
         justify-content: flex-end;
+        gap: 1em;
+
+        .vector {
+            display: flex;
+            justify-content: space-between;
+            gap: 1em;
+        }
     }
 }
