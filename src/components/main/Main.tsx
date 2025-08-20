@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import TopPanel from '../top-panel/TopPanel';
 import { IApplicationState } from '../../state/ducks';
 import { balanceUpdate } from '../../state/ducks/balance/actions';
+import Graph from '../graph/Graph';
 
 import './style.css';
 
@@ -21,6 +22,7 @@ const Main = ({ balanceUpdate }: IProps) => {
     return (
         <div className="main">
             <TopPanel />
+            <Graph />
         </div>
     );
 };
