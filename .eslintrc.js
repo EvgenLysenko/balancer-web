@@ -1,23 +1,36 @@
 module.exports = {
     parser: '@typescript-eslint/parser',  // Specifies the ESLint parser
-    extends: [
-        'plugin:react/recommended',  // Uses the recommended rules from @eslint-plugin-react
-        'plugin:@typescript-eslint/recommended',  // Uses the recommended rules from the @typescript-eslint/eslint-plugin
-        +'prettier/@typescript-eslint',  // Uses eslint-livePoints-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
-        +'plugin:prettier/recommended',  // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
-        +'plugin:react-hooks/recommended' // Enable react hooks warnings
-
-    ],
-    parserOptions: {
-        ecmaVersion: 2018,  // Allows for the parsing of modern ECMAScript features
-        sourceType: 'module',  // Allows for the use of imports
-        ecmaFeatures: {
-            jsx: true,  // Allows for the parsing of JSX
+    "extends": [
+        "eslint:recommended",
+        //"plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "react-app",
+        "prettier"
+	],
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
         },
+        "ecmaVersion": 12,
+        "sourceType": "module"
     },
     rules: {
-        // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
-        // e.g. "@typescript-eslint/explicit-function-return-type": "off",
+        "no-empty": "off",
+        "no-var": "warn",
+        "no-prototype-builtins": "off",
+        "prefer-const": "off", // TODO set "warn"
+        "@typescript-eslint/no-unused-vars": "off", // bug - spam for imports
+        "@typescript-eslint/no-unused-vars-experimental": "off",
+        "@typescript-eslint/no-inferrable-types": "off",
+        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/no-non-null-assertion": "off", // TODO set "warn" or "err"
+        "@typescript-eslint/ban-types": "off", // TODO set "warn" or "err"
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off", // Line 5:22:  Argument '###' should be typed with a non-any type  @typescript-eslint/explicit-module-boundary-types
+        "@typescript-eslint/no-var-requires": "warn",
+        "@typescript-eslint/adjacent-overload-signatures": "off", // TODO set "warn" or "err"
+        "@typescript-eslint/no-extra-semi": "warn",
     },
     settings: {
         react: {

@@ -1,19 +1,43 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import TopPanel from '../top-panel/TopPanel';
+import { IApplicationState } from '../../state/ducks';
+import { balanceUpdate } from '../../state/ducks/balance/actions';
+import Graph from '../graph/Graph';
 
 import './style.css';
 
-export const Main = () => {
-    const dispatch = useDispatch();
+interface IProps {
+    connected: boolean;
+    balanceUpdate: () => void;
+}
 
+const Main = ({ balanceUpdate }: IProps) => {
     useEffect(() => {
-        //dispatch(fetchAppParams());
-    }, [dispatch]);
+        console.log("useEffect", "setInterval(() => balanceUpdate(), 1000)");
+        const interval = setInterval(() => balanceUpdate(), 100);
+        return () => clearInterval(interval);
+    }, [balanceUpdate]);
 
     return (
         <div className="main">
             <TopPanel />
+            <Graph />
         </div>
     );
 };
+
+const mapStateToProps = (state: IApplicationState) => {
+    return {
+        connected: state.balance.connected,
+        serialReader: state.balance.serialReader,
+    };
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        balanceUpdate: () => dispatch(balanceUpdate()),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

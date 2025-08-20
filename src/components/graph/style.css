@@ -1,0 +1,8 @@
+.balance-button {
+    padding: 0.2em 0.5em;
+    font-weight: 600;
+    color: darkcyan;
+    border: 1px solid lightgray;
+    border-radius: 0.5em;
+    cursor: pointer;
+}
