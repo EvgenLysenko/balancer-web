@@ -2,14 +2,20 @@ export interface IBalanceState {
     connected: boolean;
     serialPort: any;
     serialReader: any;
+    serialWriter: any;
     mx: number;
     my: number;
     mz: number;
+    readingStarted: boolean;
 }
 
 export const BalanceActionTypes = {
-    BALANCE_START: "@@balance/BALANCE_START",
+    BALANCE_CONNECT: "@@balance/BALANCE_CONNECT",
+    BALANCE_DISCONNECT: "@@balance/BALANCE_DISCONNECT",
     BALANCE_STARTED: "@@balance/BALANCE_STARTED",
-    BALANCE_UPDATE: "@@balance/BALANCE_UPDATE",
+    BALANCE_STOPPED: "@@balance/BALANCE_STOPPED",
+    BALANCE_CHECK_UPDATED: "@@balance/BALANCE_CHECK_UPDATED",
     BALANCE_UPDATE_VALUES: "@@balance/BALANCE_UPDATE_VALUES",
+    BALANCE_READING_START: "@@balance/BALANCE_READING_START",
+    BALANCE_READING_STOPPED: "@@balance/BALANCE_READING_STOPPED",
 };

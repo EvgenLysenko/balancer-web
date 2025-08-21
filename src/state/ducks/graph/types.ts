@@ -2,9 +2,12 @@ export interface IGraphState {
     x: number[];
     y: number[];
     tmp: number;
+    updateTime: Date;
+    chartRequested: boolean;
 }
 
 export const GraphActionTypes = {
     GRAPH_REQUEST: "@@graph/GRAPH_REQUEST",
     GRAPH_UPDATED: "@@graph/GRAPH_UPDATED",
+    CHART_UPDATED: "@@chart/CHART_UPDATED",
 };

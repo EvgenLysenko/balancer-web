@@ -2,22 +2,23 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import TopPanel from '../top-panel/TopPanel';
 import { IApplicationState } from '../../state/ducks';
-import { balanceUpdate } from '../../state/ducks/balance/actions';
+import { balanceCheckUpdated } from '../../state/ducks/balance/actions';
 import Graph from '../graph/Graph';
 
 import './style.css';
 
 interface IProps {
     connected: boolean;
-    balanceUpdate: () => void;
+    chartRequested: boolean;
+    balanceCheckUpdated: () => void;
 }
 
-const Main = ({ balanceUpdate }: IProps) => {
+const Main = ({ balanceCheckUpdated }: IProps) => {
     useEffect(() => {
         console.log("useEffect", "setInterval(() => balanceUpdate(), 1000)");
-        const interval = setInterval(() => balanceUpdate(), 100);
+        const interval = setInterval(() => balanceCheckUpdated(), 1000);
         return () => clearInterval(interval);
-    }, [balanceUpdate]);
+    }, [balanceCheckUpdated]);
 
     return (
         <div className="main">
@@ -31,12 +32,13 @@ const mapStateToProps = (state: IApplicationState) => {
     return {
         connected: state.balance.connected,
         serialReader: state.balance.serialReader,
+        chartRequested: state.graph.chartRequested,
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        balanceUpdate: () => dispatch(balanceUpdate()),
+        balanceCheckUpdated: () => dispatch(balanceCheckUpdated()),
     };
 };
 
