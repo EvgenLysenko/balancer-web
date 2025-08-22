@@ -10,6 +10,7 @@ export const initialState: IBalanceState = {
     my: 0,
     mz: 0,
     readingStarted: false,
+    rpm: 0,
 }
 
 export const balanceReducer = (
@@ -51,6 +52,7 @@ export const balanceReducer = (
                 mx: action.payload.mx,
                 my: action.payload.my,
                 mz: action.payload.mz,
+                rpm: action.payload.rpm,
             };
         }
         case BalanceActionTypes.BALANCE_READING_STOPPED: {

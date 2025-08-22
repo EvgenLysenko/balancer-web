@@ -21,8 +21,8 @@ export const balanceCheckUpdated = () => {
     return action(BalanceActionTypes.BALANCE_CHECK_UPDATED);
 }
 
-export const balanceUpdateValues = (mx: number, my: number, mz: number) => {
-    return action(BalanceActionTypes.BALANCE_UPDATE_VALUES, { mx, my, mz });
+export const balanceUpdateValues = (mx: number, my: number, mz: number, rpm: number) => {
+    return action(BalanceActionTypes.BALANCE_UPDATE_VALUES, { mx, my, mz, rpm });
 }
 
 export const balanceReadingStart = () => {
@@ -32,3 +32,8 @@ export const balanceReadingStart = () => {
 export const balanceReadingStopped = () => {
     return action(BalanceActionTypes.BALANCE_READING_STOPPED);
 }
+
+export const balanceRotationStart = () => {
+    return action(BalanceActionTypes.BALANCE_ROTATION_START);
+}
+

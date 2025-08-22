@@ -7,6 +7,7 @@ export interface IBalanceState {
     my: number;
     mz: number;
     readingStarted: boolean;
+    rpm: number;
 }
 
 export const BalanceActionTypes = {
@@ -18,4 +19,5 @@ export const BalanceActionTypes = {
     BALANCE_UPDATE_VALUES: "@@balance/BALANCE_UPDATE_VALUES",
     BALANCE_READING_START: "@@balance/BALANCE_READING_START",
     BALANCE_READING_STOPPED: "@@balance/BALANCE_READING_STOPPED",
+    BALANCE_ROTATION_START: "@@balance/BALANCE_ROTATION_START",
 };

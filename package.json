@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "homepage": ".",
   "private": true,
+  "engineStrict": true,
   "engines": {
     "node": ">=20.0.0"
   },
@@ -26,6 +27,8 @@
     "typesafe-actions": "^5.1.0"
   },
   "scripts": {
+    "preinstall": "nvm install 20.19.4",
+    "prestart": "nvm use 20.19.4",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

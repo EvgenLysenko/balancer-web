@@ -1,10 +1,14 @@
-export class BalancerParser {
+export class BalancerParser
+{
+    public static chartSize = 255;
+
     public time: number = 0;
     public value1: number = 0;
     public value2: number = 0;
     public value3: number = 0;
+    public rpm: number = 0;
 
-    protected buf: Uint8Array = new Uint8Array(256);
+    protected buf: Uint8Array = new Uint8Array(BalancerParser.chartSize);
     protected bufSize: number = 0;
 
     public parse(data: Uint8Array) {
@@ -20,8 +24,8 @@ export class BalancerParser {
     protected num: number = 0;
     protected numIdx: number = 0;
 
-    public chartX: number[] = Array.from({ length: 1000 }, (value, index) => index);
-    public chartY: number[] = new Array<number>(1000);
+    public chartX: number[] = Array.from({ length: BalancerParser.chartSize }, (value, index) => index);
+    public chartY: number[] = new Array<number>(BalancerParser.chartSize);
     public chartRequested: boolean = false;
     public chartReceivedIdx: number = 0;
     protected chartUpdatedTime: Date = new Date();
@@ -272,7 +276,37 @@ export class BalancerParser {
 
             //console.log(idx, value);
         }
+        else if (BalancerParser.checkStartWith(buf, size, "$BAL,RPM,")) {
+            //const str = this.decoder.decode(buf);
+            //console.log(str);
+            
+            let i = 9;
+            let rpm = 0;
+            let minus = false;
+            for (; i < size; ++i) {
+                const ch = buf[i];
+                if (ch === 0x2C) // ,
+                    break;
+
+                if (ch >= 0x30 && ch <= 0x39) { // 0 - 9
+                    rpm *= 10;
+                    rpm += ch - 0x30;
+                }
+                else if (ch === 0x2D) { // -
+                    minus = true;
+                }
+                else {
+                    break;
+                }
+            }
+
+            if (minus)
+                rpm = -rpm;
+            //console.log(rpm);
+
+            this.rpm = rpm;
+            console.log(this.rpm);
+       }
         //console.log(buf, size);
     }
-
 }

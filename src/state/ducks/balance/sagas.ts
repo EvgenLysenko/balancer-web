@@ -58,6 +58,20 @@ const makeRead = async (reader: any): Promise<any> => {
     }
 }
 
+export const makeWrite = async (writer: any, text: string): Promise<any> => {
+    try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+
+        await writer.write(data);
+        console.log("Data written successfully:", text);
+    }
+    catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
 function* handleBalanceConnected(action: PayloadAction<TypeConstant, IBalanceState>): Generator {
     try {
         const { connected } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
@@ -100,11 +114,13 @@ function* handleBalanceDisconnect(action: PayloadAction<TypeConstant, IBalanceSt
 
 function* handleBalanceCheckUpdated(action: PayloadAction<TypeConstant, IBalanceState>): Generator {
     try {
-        const { mx, my, mz } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        const { mx, my, mz, rpm } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
 
-        if (mx !== balancerParser.value1 || my !== balancerParser.value2 || mz !== balancerParser.value3) {
+        if (mx !== balancerParser.value1 || my !== balancerParser.value2 || mz !== balancerParser.value3 || 
+            rpm !== balancerParser.rpm
+        ) {
             //console.log("handleBalanceUpdate", mx, my, mz, balancerParser.value1, balancerParser.value2, balancerParser.value3);
-            yield put(balanceUpdateValues(balancerParser.value1, balancerParser.value2, balancerParser.value3));
+            yield put(balanceUpdateValues(balancerParser.value1, balancerParser.value2, balancerParser.value3, balancerParser.rpm));
         }
 
         const { updateTime } = (yield select((state: IApplicationState) => state.graph)) as IGraphState;
@@ -163,6 +179,24 @@ function* handleBalanceStarted(action: PayloadAction<TypeConstant, IBalanceState
     }
 }
 
+function* handleBalanceRotationStart(action: PayloadAction<TypeConstant, IGraphState>): Generator {
+    try {
+        const { connected } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        if (!connected)
+            return;
+
+        const { serialWriter } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        if (serialWriter) {
+            yield call(makeWrite, serialWriter, "$BAL,START\n");
+        }
+
+        //yield put(graphUpdated(y, newTmp));
+    }
+    catch (err) {
+        ErrorUtils.handleDefault("graph - handleGraphRequest", err);
+    }
+}
+
 function* watchBalanceConnected(): Generator {
     yield takeEvery(BalanceActionTypes.BALANCE_CONNECT, handleBalanceConnected);
 }
@@ -179,11 +213,16 @@ function* watchBalanceCheckUpdated(): Generator {
     yield takeEvery(BalanceActionTypes.BALANCE_CHECK_UPDATED, handleBalanceCheckUpdated);
 }
 
+function* watchBalanceRotationStart(): Generator {
+    yield takeEvery(BalanceActionTypes.BALANCE_ROTATION_START, handleBalanceRotationStart);
+}
+
 export function* balanceSaga() {
     yield all([
         fork(watchBalanceConnected),
         fork(watchBalanceDisconnect),
         fork(watchBalanceStarted),
         fork(watchBalanceCheckUpdated),
+        fork(watchBalanceRotationStart),
     ]);
 }
