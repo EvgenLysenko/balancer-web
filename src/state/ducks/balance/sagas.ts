@@ -2,7 +2,7 @@ import { all, call, delay, fork, put, select, takeEvery } from "redux-saga/effec
 import { PayloadAction, TypeConstant } from "typesafe-actions";
 import { IApplicationState } from "..";
 import { BalanceActionTypes, IBalanceState } from "./types";
-import { balanceReadingStopped, balanceStarted, balanceStopped, balanceUpdateValues } from "./actions";
+import { balanceReadingStopped, balanceStarted, balanceStopped, balanceUpdateDriveState } from "./actions";
 import ErrorUtils from "../../../utils/ErrorUtils";
 import { BalancerParser } from "../../../balancer/BalancerParser";
 import { IGraphState } from "../graph/types";
@@ -114,13 +114,10 @@ function* handleBalanceDisconnect(action: PayloadAction<TypeConstant, IBalanceSt
 
 function* handleBalanceCheckUpdated(action: PayloadAction<TypeConstant, IBalanceState>): Generator {
     try {
-        const { mx, my, mz, rpm } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        const { rpm, angle } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
 
-        if (mx !== balancerParser.value1 || my !== balancerParser.value2 || mz !== balancerParser.value3 || 
-            rpm !== balancerParser.rpm
-        ) {
-            //console.log("handleBalanceUpdate", mx, my, mz, balancerParser.value1, balancerParser.value2, balancerParser.value3);
-            yield put(balanceUpdateValues(balancerParser.value1, balancerParser.value2, balancerParser.value3, balancerParser.rpm));
+        if (rpm !== balancerParser.rpm || angle !== balancerParser.angle) {
+            yield put(balanceUpdateDriveState(balancerParser.rpm, balancerParser.angle));
         }
 
         const { updateTime } = (yield select((state: IApplicationState) => state.graph)) as IGraphState;
@@ -138,7 +135,7 @@ function* handleBalanceCheckUpdated(action: PayloadAction<TypeConstant, IBalance
 function* handleBalanceStarted(action: PayloadAction<TypeConstant, IBalanceState>): Generator {
     try {
         while (true) {
-            const { connected, serialReader, mx, my, mz } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+            const { connected, serialReader } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
             if (!connected || serialReader == null)
                 break;
 
@@ -151,11 +148,6 @@ function* handleBalanceStarted(action: PayloadAction<TypeConstant, IBalanceState
                 const data = res as Uint8Array;
                 if (data.length > 0) {
                     balancerParser.parse(res as Uint8Array);
-
-                    if (mx !== balancerParser.value1 || my !== balancerParser.value2 || mz !== balancerParser.value3) {
-                        //console.log("handleBalanceUpdate", mx, my, mz, balancerParser.value1, balancerParser.value2, balancerParser.value3);
-                        //yield put(balanceUpdateValues(balancerParser.value1, balancerParser.value2, balancerParser.value3));
-                    }
 
                     yield delay(0);
                     //console.log(1);

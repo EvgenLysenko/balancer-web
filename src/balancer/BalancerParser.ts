@@ -5,7 +5,7 @@ interface IParseContext {
 }
 
 
-interface IDriveState {
+export interface IDriveState {
     rpm: number;
     angle: number;
 }

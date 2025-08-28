@@ -6,9 +6,6 @@ export const initialState: IBalanceState = {
     serialPort: undefined,
     serialReader: undefined,
     serialWriter: undefined,
-    mx: 0,
-    my: 0,
-    mz: 0,
     readingStarted: false,
     rpm: NaN,
     angle: NaN,
@@ -48,12 +45,10 @@ export const balanceReducer = (
                 serialWriter: undefined,
             };
         }
-        case BalanceActionTypes.BALANCE_UPDATE_VALUES: {
+        case BalanceActionTypes.BALANCE_UPDATE_DRIVE_STATE: {
             return { ...state,
-                mx: action.payload.mx,
-                my: action.payload.my,
-                mz: action.payload.mz,
                 rpm: action.payload.rpm,
+                angle: action.payload.angle,
             };
         }
         case BalanceActionTypes.BALANCE_READING_STOPPED: {

@@ -1,5 +1,6 @@
 import { action } from "typesafe-actions";
 import { BalanceActionTypes } from "./types";
+import { IDriveState } from "../../../balancer/BalancerParser";
 
 export const balanceConnect = () => {
     return action(BalanceActionTypes.BALANCE_CONNECT);
@@ -21,8 +22,8 @@ export const balanceCheckUpdated = () => {
     return action(BalanceActionTypes.BALANCE_CHECK_UPDATED);
 }
 
-export const balanceUpdateValues = (mx: number, my: number, mz: number, rpm: number) => {
-    return action(BalanceActionTypes.BALANCE_UPDATE_VALUES, { mx, my, mz, rpm });
+export const balanceUpdateDriveState = (rpm: number, angle: number) => {
+    return action(BalanceActionTypes.BALANCE_UPDATE_DRIVE_STATE, { rpm, angle });
 }
 
 export const balanceReadingStart = () => {
