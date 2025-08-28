@@ -4,6 +4,7 @@ import TopPanel from '../top-panel/TopPanel';
 import { IApplicationState } from '../../state/ducks';
 import { balanceCheckUpdated } from '../../state/ducks/balance/actions';
 import Graph from '../graph/Graph';
+//import { BalancerParser } from '../../balancer/BalancerParser';
 
 import './style.css';
 
@@ -19,6 +20,9 @@ const Main = ({ balanceCheckUpdated }: IProps) => {
         const interval = setInterval(() => balanceCheckUpdated(), 1000);
         return () => clearInterval(interval);
     }, [balanceCheckUpdated]);
+
+    //const parser = new BalancerParser();
+    //parser.test();
 
     return (
         <div className="main">

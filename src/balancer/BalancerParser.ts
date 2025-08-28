@@ -1,4 +1,16 @@
-export class BalancerParser
+interface IParseContext {
+    startPos: number;
+    hasNext: boolean;
+    //isEmpty: boolean;
+}
+
+
+interface IDriveState {
+    rpm: number;
+    angle: number;
+}
+
+export class BalancerParser implements IDriveState
 {
     public static chartSize = 255;
 
@@ -6,7 +18,9 @@ export class BalancerParser
     public value1: number = 0;
     public value2: number = 0;
     public value3: number = 0;
-    public rpm: number = 0;
+
+    public rpm: number = NaN;
+    public angle: number = NaN;
 
     protected buf: Uint8Array = new Uint8Array(BalancerParser.chartSize);
     protected bufSize: number = 0;
@@ -204,9 +218,9 @@ export class BalancerParser
         return true;
     }
 
-    //protected encoder = new TextEncoder();
     //const uint8Array: Uint8Array = encoder.encode(myString);
     protected decoder = new TextDecoder('utf-8'); // Specify the encoding, e.g., 'utf-8'
+    protected encoder = new TextEncoder();
 
 
     protected parseSentence(buf: Uint8Array, size: number)
@@ -306,7 +320,110 @@ export class BalancerParser
 
             this.rpm = rpm;
             console.log(this.rpm);
-       }
+        }
+        else if (BalancerParser.checkStartWith(buf, size, "$BAL,DR,")) {
+            this.parseDriveState(buf, size);
+        }
         //console.log(buf, size);
+    }
+
+    public static newParseContext(startPos: number): IParseContext {
+        return {
+            startPos: startPos,
+            hasNext: true,
+            //isEmpty: false,
+        };
+    }
+
+    public static parseNumber(buf: Uint8Array, size: number, context: IParseContext, defaultValue: number): number {
+        if (!context.hasNext)
+            return defaultValue;
+
+        if (context.startPos >= size) {
+            context.hasNext = false;
+            return defaultValue;
+        }
+
+        let i = context.startPos;
+        let value = 0;
+        let minus = false;
+        for (; i < size; ++i) {
+            const ch = buf[i];
+            if (ch === 0x2C) { // ,
+                context.hasNext = true;
+                context.startPos = i + 1;
+                break;
+            }
+
+            if (ch >= 0x30 && ch <= 0x39) { // 0 - 9
+                value *= 10;
+                value += ch - 0x30;
+            }
+            else if (ch === 0x2D) { // -
+                minus = true;
+            }
+            else {
+                break;
+            }
+        }
+
+        if (minus)
+            value = -value;
+        //console.log(rpm);
+
+        for (; i < size; ++i) {
+            const ch = buf[i];
+            if (ch === 0x2C) { // ,
+                context.hasNext = true;
+                context.startPos = i + 1;
+                return value;
+            }
+        }
+
+        if (i >= size) {
+            context.hasNext = false;
+        }
+
+        return value;
+    }
+
+    // "$BAL,DR,"
+    protected parseDriveState(buf: Uint8Array, size: number) {
+        const context: IParseContext = BalancerParser.newParseContext(8);
+        this.angle = BalancerParser.parseNumber(buf, size, context, NaN);
+        this.rpm = BalancerParser.parseNumber(buf, size, context, NaN);
+    }
+
+    public test()
+    {
+        let uint8Array: Uint8Array = this.encoder.encode("$BAL,DR,-234,12345");
+        let context: IParseContext = BalancerParser.newParseContext(8);
+        this.parseDriveState(uint8Array, uint8Array.length);
+        console.log("TEST: $BAL,DR,-234,12345", this.angle, this.rpm);
+
+        uint8Array = this.encoder.encode("$BAL,DR,-234,12345*AA");
+        context = BalancerParser.newParseContext(8);
+        this.parseDriveState(uint8Array, uint8Array.length);
+        console.log("TEST: $BAL,DR,-234,12345*AA", this.angle, this.rpm);
+
+        uint8Array = this.encoder.encode("$BAL,DR,-234,12345,,,*AA");
+        context = BalancerParser.newParseContext(8);
+        this.parseDriveState(uint8Array, uint8Array.length);
+        console.log("TEST: $BAL,DR,-234,12345,,,*AA", this.angle, this.rpm);
+
+        uint8Array = this.encoder.encode("$BAL,DR,-234");
+        context = BalancerParser.newParseContext(8);
+        this.parseDriveState(uint8Array, uint8Array.length);
+        console.log("TEST: $BAL,DR,-234", this.angle, this.rpm);
+
+        uint8Array = this.encoder.encode("$BAL,DR,-234,");
+        context = BalancerParser.newParseContext(8);
+        this.parseDriveState(uint8Array, uint8Array.length);
+        console.log("TEST: $BAL,DR,-234,", this.angle, this.rpm);
+
+        uint8Array = this.encoder.encode("$BAL,DR,-234*AA");
+        context = BalancerParser.newParseContext(8);
+        this.parseDriveState(uint8Array, uint8Array.length);
+        console.log("TEST: $BAL,DR,-234*AA", this.angle, this.rpm);
     }
 }

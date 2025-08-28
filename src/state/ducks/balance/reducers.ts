@@ -10,7 +10,8 @@ export const initialState: IBalanceState = {
     my: 0,
     mz: 0,
     readingStarted: false,
-    rpm: 0,
+    rpm: NaN,
+    angle: NaN,
 }
 
 export const balanceReducer = (

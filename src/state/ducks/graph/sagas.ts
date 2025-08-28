@@ -3,23 +3,8 @@ import { PayloadAction, TypeConstant } from "typesafe-actions";
 import { IApplicationState } from "..";
 import { GraphActionTypes, IGraphState } from "./types";
 import ErrorUtils from "../../../utils/ErrorUtils";
-import { balancerParser } from "../balance/sagas";
+import { balancerParser, makeWrite } from "../balance/sagas";
 import { IBalanceState } from "../balance/types";
-
-const makeWrite = async (writer: any, text: string): Promise<any> => {
-    try {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(text);
-
-        await writer.write(data);
-        console.log("Data written successfully:", text);
-    }
-    catch (err) {
-        console.error(err);
-        return null;
-    }
-}
-
 
 function* handleGraphRequest(action: PayloadAction<TypeConstant, IGraphState>): Generator {
     try {

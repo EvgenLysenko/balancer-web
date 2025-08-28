@@ -52,14 +52,8 @@ const data0 = {
     labels,
     datasets: [
     {
-        label: 'Sin',
-        data: labels.map((value) => Math.sin(value / 180 * 3.14)),
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-        label: 'Cos',
-        data: labels.map((value) => Math.cos(value / 180 * 3.14)),
+        label: 'Y',
+        data: labels.map((value) => NaN),
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
     },

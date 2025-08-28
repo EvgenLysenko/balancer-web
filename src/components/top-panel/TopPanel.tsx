@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button } from '../controls/button/Button';
 import { balanceConnect, balanceDisconnect, balanceRotationStart } from '../../state/ducks/balance/actions';
 import { IApplicationState } from '../../state/ducks';
-import { Vector } from './Vector';
+//import { Vector } from './Vector';
 import { graphRequest } from '../../state/ducks/graph/actions';
 
 import "./style.css";
@@ -16,13 +16,14 @@ interface IProps {
     my: number;
     mz: number;
     rpm: number;
+    angle: number;
     balanceConnect: () => void;
     graphRequest: () => void;
     balanceDisconnect: () => void;
     balanceRotationStart: () => void;
 }
 
-const TopPanel = ({ connected, readingStarted, chartRequested, mx, my, mz, rpm,
+const TopPanel = ({ connected, readingStarted, chartRequested, mx, my, mz, rpm, angle,
     balanceConnect, balanceDisconnect, graphRequest, balanceRotationStart
 }: IProps) => {
     //console.log(mx, my, mz);
@@ -30,12 +31,15 @@ const TopPanel = ({ connected, readingStarted, chartRequested, mx, my, mz, rpm,
         <div className="top-panel-container">
             <div className="top-panel">
                 <div>
-                    RPM: {rpm}
+                    Angle: {isNaN(angle) ? "--" : angle.toString()}
                 </div>
                 <div>
+                    RPM: {isNaN(rpm) ? "--" : rpm.toString()}
+                </div>
+                {/* <div>
                     Vector: 
                     <Vector x={mx} y={my} z={mz}/>
-                </div>
+                </div> */}
                 <Button
                     label="Start"
                     onClick={balanceRotationStart}
@@ -63,6 +67,7 @@ const mapStateToProps = (state: IApplicationState) => {
         my: state.balance.my,
         mz: state.balance.mz,
         rpm: state.balance.rpm,
+        angle: state.balance.angle,
         readingStarted: state.balance.readingStarted,
         chartRequested: state.graph.chartRequested,
     };

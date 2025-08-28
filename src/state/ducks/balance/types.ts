@@ -8,6 +8,7 @@ export interface IBalanceState {
     mz: number;
     readingStarted: boolean;
     rpm: number;
+    angle: number;
 }
 
 export const BalanceActionTypes = {
