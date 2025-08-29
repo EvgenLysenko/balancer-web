@@ -7,6 +7,7 @@ import Graph from '../graph/Graph';
 import AngleWheel from '../angle-wheel/AngleWheel';
 
 import './style.css';
+//import { balancerParser } from '../../state/ducks/balancer/sagas';
 
 interface IProps {
     angle: number;
@@ -19,6 +20,8 @@ const Main = ({ angle, balancerCheckUpdated }: IProps) => {
         const interval = setInterval(() => balancerCheckUpdated(), 100);
         return () => clearInterval(interval);
     }, [balancerCheckUpdated]);
+
+    //balancerParser.test();
 
     return (
         <div className="main">

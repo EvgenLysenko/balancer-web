@@ -4,6 +4,7 @@ import { Button } from '../controls/button/Button';
 import { balancerConnect, balancerDisconnect, balancerRotationStart } from '../../state/ducks/balancer/actions';
 import { IApplicationState } from '../../state/ducks';
 import { graphRequest } from '../../state/ducks/graph/actions';
+import { IDisbalance } from '../../balancer/Balancer';
 
 import "./style.css";
 
@@ -14,13 +15,14 @@ interface IProps {
     isIdle: boolean;
     rpm: number;
     angle: number;
+    disbalance: IDisbalance;
     balancerConnect: () => void;
     graphRequest: () => void;
     balancerDisconnect: () => void;
     balancerRotationStart: () => void;
 }
 
-const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle,
+const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle, disbalance,
     balancerConnect, balancerDisconnect, graphRequest, balancerRotationStart
 }: IProps) => {
     return (
@@ -31,6 +33,9 @@ const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angl
                 </div>
                 <div>
                     RPM: {isNaN(rpm) ? "--" : rpm.toString()}
+                </div>
+                <div>
+                    Disbalance: {isNaN(disbalance.angle) ? "--" : disbalance.angle.toFixed(2)} / {isNaN(disbalance.value) ? "--" : disbalance.value.toString()}
                 </div>
                 <Button
                     label="Start"
@@ -59,6 +64,7 @@ const mapStateToProps = (state: IApplicationState) => {
         isIdle: state.balancer.isIdle,
         rpm: state.balancer.rpm,
         angle: state.balancer.angle,
+        disbalance: state.balancer.disbalance,
         readingStarted: state.balancer.readingStarted,
         chartRequested: state.graph.chartRequested,
     };

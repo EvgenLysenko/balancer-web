@@ -2,7 +2,7 @@
     .top-panel {
         padding: 10px;
         display: flex;
-        justify-content: flex-end;
+        justify-content: center;
         gap: 1em;
 
         .vector {

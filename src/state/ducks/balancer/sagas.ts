@@ -2,14 +2,15 @@ import { all, call, delay, fork, put, select, takeEvery } from "redux-saga/effec
 import { PayloadAction, TypeConstant } from "typesafe-actions";
 import { IApplicationState } from "..";
 import { BalancerActionTypes, IBalancerState } from "./types";
-import { balancerReadingStopped, balancerStarted, balancerStopped, balancerUpdateDriveState } from "./actions";
+import { balancerDisbalanceUpdated, balancerReadingStopped, balancerStarted, balancerStopped, balancerUpdateDriveState } from "./actions";
 import ErrorUtils from "../../../utils/ErrorUtils";
 import { BalancerParser } from "../../../balancer/BalancerParser";
 import { IGraphState } from "../graph/types";
 import { chartUpdated } from "../graph/actions";
 import { Balancer } from "../../../balancer/Balancer";
 
-export const balancerParser = new BalancerParser();
+export const balancer = new Balancer();
+export const balancerParser = new BalancerParser(balancer);
 
 // const makeCallPorts = async (): Promise<any> => {
 //     try {
@@ -119,6 +120,11 @@ function* handleBalancerCheckUpdated(action: PayloadAction<TypeConstant, IBalanc
 
         if (!Balancer.isSame(currentState, balancerParser)) {
             yield put(balancerUpdateDriveState(balancerParser));
+        }
+
+        if (currentState.disbalance.angle !== balancer.disbalance.angle || currentState.disbalance.value !== balancer.disbalance.value) {
+            console.log("disbalance changed", balancer.disbalance);
+            yield put(balancerDisbalanceUpdated({ ...balancer.disbalance }));
         }
 
         const { updateTime } = (yield select((state: IApplicationState) => state.graph)) as IGraphState;

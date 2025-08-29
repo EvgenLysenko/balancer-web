@@ -1,6 +1,7 @@
 import { action } from "typesafe-actions";
 import { BalancerActionTypes } from "./types";
 import { IDriveState } from "../../../balancer/BalancerParser";
+import { IDisbalance } from "../../../balancer/Balancer";
 
 export const balancerConnect = () => {
     return action(BalancerActionTypes.BALANCER_CONNECT);
@@ -42,3 +43,6 @@ export const balancerRotationStart = () => {
     return action(BalancerActionTypes.BALANCER_ROTATION_START);
 }
 
+export const balancerDisbalanceUpdated = (disbalance: IDisbalance) => {
+    return action(BalancerActionTypes.BALANCER_DISBALANCE_UPDATED, { disbalance });
+}

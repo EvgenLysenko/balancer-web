@@ -1,3 +1,5 @@
+import { Balancer } from "./Balancer";
+
 interface IParseContext {
     startPos: number;
     hasNext: boolean;
@@ -11,8 +13,17 @@ export interface IDriveState {
     angle: number;
 }
 
+const isSameNumbers = (num1: number, num2: number): boolean => {
+    return num1 === num2 || (isNaN(num1) && isNaN(num2));
+}
+
 export class BalancerParser implements IDriveState
 {
+    public constructor(balancer: Balancer) {
+        this.balancer = balancer;
+    }
+
+    protected readonly balancer: Balancer;
     public static chartSize = 255;
 
     public time: number = 0;
@@ -326,6 +337,9 @@ export class BalancerParser implements IDriveState
         else if (BalancerParser.checkStartWith(buf, size, "$BAL,DR,")) {
             this.parseDriveState(buf, size);
         }
+        else if (BalancerParser.checkStartWith(buf, size, "$BAL,RES,")) {
+            BalancerParser.parseBalanceResult(this.balancer, buf, size);
+        }
         //console.log(buf, size);
     }
 
@@ -398,36 +412,34 @@ export class BalancerParser implements IDriveState
         this.rpm = BalancerParser.parseNumber(buf, size, context, NaN);
     }
 
+    // "$BAL,RES,"
+    public static parseBalanceResult(balancer: Balancer, buf: Uint8Array, size: number) {
+        const context: IParseContext = BalancerParser.newParseContext(9);
+
+        balancer.disbalance.angle = BalancerParser.parseNumber(buf, size, context, NaN);
+        balancer.disbalance.value = BalancerParser.parseNumber(buf, size, context, NaN);
+    }
+
+    public testDriveState(text: string, isIdle: boolean, angle: number, rpm: number) {
+        const buf: Uint8Array = this.encoder.encode(text);
+        const context: IParseContext = BalancerParser.newParseContext(8);
+        this.parseDriveState(buf, buf.length);
+        console.log("TEST: " + text, this.isIdle, this.angle, this.rpm,
+            this.isIdle === isIdle && isSameNumbers(this.angle, angle) && isSameNumbers(this.rpm, rpm) ? "OK" : "FAILED" );
+    }
+
     public test()
     {
-        let uint8Array: Uint8Array = this.encoder.encode("$BAL,DR,-234,12345");
-        let context: IParseContext = BalancerParser.newParseContext(8);
-        this.parseDriveState(uint8Array, uint8Array.length);
-        console.log("TEST: $BAL,DR,-234,12345", this.angle, this.rpm);
+        this.testDriveState("$BAL,DR,1,-234,12345", true, -234, 12345);
+        this.testDriveState("$BAL,DR,0,-234,12345*AA", false, -234, 12345);
+        this.testDriveState("$BAL,DR,1,-234,12345,,,*AA", true, -234, 12345);
+        this.testDriveState("$BAL,DR,0,-234", false, -234, NaN);
+        this.testDriveState("$BAL,DR,1,-234,", true, -234, NaN);
+        this.testDriveState("$BAL,DR,0,-234*AA", false, -234, NaN);
 
-        uint8Array = this.encoder.encode("$BAL,DR,-234,12345*AA");
-        context = BalancerParser.newParseContext(8);
-        this.parseDriveState(uint8Array, uint8Array.length);
-        console.log("TEST: $BAL,DR,-234,12345*AA", this.angle, this.rpm);
-
-        uint8Array = this.encoder.encode("$BAL,DR,-234,12345,,,*AA");
-        context = BalancerParser.newParseContext(8);
-        this.parseDriveState(uint8Array, uint8Array.length);
-        console.log("TEST: $BAL,DR,-234,12345,,,*AA", this.angle, this.rpm);
-
-        uint8Array = this.encoder.encode("$BAL,DR,-234");
-        context = BalancerParser.newParseContext(8);
-        this.parseDriveState(uint8Array, uint8Array.length);
-        console.log("TEST: $BAL,DR,-234", this.angle, this.rpm);
-
-        uint8Array = this.encoder.encode("$BAL,DR,-234,");
-        context = BalancerParser.newParseContext(8);
-        this.parseDriveState(uint8Array, uint8Array.length);
-        console.log("TEST: $BAL,DR,-234,", this.angle, this.rpm);
-
-        uint8Array = this.encoder.encode("$BAL,DR,-234*AA");
-        context = BalancerParser.newParseContext(8);
-        this.parseDriveState(uint8Array, uint8Array.length);
-        console.log("TEST: $BAL,DR,-234*AA", this.angle, this.rpm);
+        const buf = this.encoder.encode("$BAL,RES,-234,1234567890*AA");
+        const context = BalancerParser.newParseContext(9);
+        BalancerParser.parseBalanceResult(this.balancer, buf, buf.length);
+        console.log("TEST: $BAL,RES,-234,1234567890*AA", this.balancer.disbalance.angle, this.balancer.disbalance.value);
     }
 }

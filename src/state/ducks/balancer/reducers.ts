@@ -10,6 +10,7 @@ export const initialState: IBalancerState = {
     isIdle: false,
     rpm: NaN,
     angle: NaN,
+    disbalance: { angle: 0, value: 0 }
 }
 
 export const balancerReducer = (
@@ -51,6 +52,11 @@ export const balancerReducer = (
                 isIdle: action.payload.isIdle,
                 rpm: action.payload.rpm,
                 angle: action.payload.angle,
+            };
+        }
+        case BalancerActionTypes.BALANCER_DISBALANCE_UPDATED: {
+            return { ...state,
+                disbalance: action.payload.disbalance,
             };
         }
         case BalancerActionTypes.BALANCER_READING_STOPPED: {
