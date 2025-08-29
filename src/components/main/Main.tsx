@@ -9,11 +9,11 @@ import AngleWheel from '../angle-wheel/AngleWheel';
 import './style.css';
 
 interface IProps {
-    connected: boolean;
+    angle: number;
     balancerCheckUpdated: () => void;
 }
 
-const Main = ({ balancerCheckUpdated }: IProps) => {
+const Main = ({ angle, balancerCheckUpdated }: IProps) => {
     useEffect(() => {
         console.log("useEffect", "setInterval(() => balanceUpdate(), 1000)");
         const interval = setInterval(() => balancerCheckUpdated(), 100);
@@ -24,7 +24,11 @@ const Main = ({ balancerCheckUpdated }: IProps) => {
         <div className="main">
             <TopPanel />
             <div className="graphs-container">
-                <AngleWheel />
+                <AngleWheel
+                    title=""
+                    initialAngle={0}
+                    currentValue={angle}
+                />
                 <Graph />
             </div>
         </div>
@@ -33,8 +37,7 @@ const Main = ({ balancerCheckUpdated }: IProps) => {
 
 const mapStateToProps = (state: IApplicationState) => {
     return {
-        connected: state.balancer.connected,
-        serialReader: state.balancer.serialReader,
+        angle: state.balancer.angle,
     };
 };
 

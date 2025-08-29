@@ -265,12 +265,12 @@ const AngleWheel = ({
             {selectedAngle}°
           </div>
         )}
-        {currentValue !== null && (
+        {currentValue != null && (
           <div style={{
             fontSize: '14px',
             color: '#64748b'
           }}>
-            {valueLabel}: {typeof currentValue === 'number' ? currentValue.toFixed(2) : currentValue} {valueUnit}
+            {valueLabel}: {typeof currentValue === 'number' ? (isNaN(currentValue) ? "--" : currentValue.toFixed(2)) : currentValue} {valueUnit}
           </div>
         )}
       </div>
