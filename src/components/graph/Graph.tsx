@@ -35,25 +35,28 @@ type IProps = {
 
 const options = {
     responsive: true,
+    indexAxis: 'y' as ('x' | 'y' | undefined), // !!! FIX ('x'|'y'|undefined) Types of property 'indexAxis' are incompatible. Type 'string' is not assignable to type '"y" | "x" | undefined'.
     plugins: {
         legend: {
             position: 'top' as const,
         },
         title: {
             display: true,
-            text: 'Graph',
+            //text: 'Graph',
         },
     },
 };
   
 const labels =  Array.from({ length: 36 }, (value, index) => index * 10);
+//const data = labels.map((value) => Math.sin(value * 3.14 / 180) * 100);
+const data = labels.map((value) => NaN);
 
 const data0 = {
     labels,
     datasets: [
     {
         label: 'Y',
-        data: labels.map((value) => NaN),
+        data,
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
     },
@@ -79,7 +82,7 @@ const Graph = ({ x, y }: IProps) => {
 
     return (
         <div className="graph">
-            <Line options={options} data={data} />;
+            <Line options={options} data={data} />
         </div>
     );
 };
