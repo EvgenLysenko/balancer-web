@@ -1,7 +1,7 @@
-import { BalanceActionTypes, IBalanceState } from "./types";
+import { BalancerActionTypes, IBalancerState } from "./types";
 import { PayloadAction, TypeConstant } from "typesafe-actions";
 
-export const initialState: IBalanceState = {
+export const initialState: IBalancerState = {
     connected: false,
     serialPort: undefined,
     serialReader: undefined,
@@ -11,25 +11,25 @@ export const initialState: IBalanceState = {
     angle: NaN,
 }
 
-export const balanceReducer = (
-    state: IBalanceState = initialState,
-    action: PayloadAction<TypeConstant, IBalanceState>
-): IBalanceState => {
+export const balancerReducer = (
+    state: IBalancerState = initialState,
+    action: PayloadAction<TypeConstant, IBalancerState>
+): IBalancerState => {
     //if (Object.values(BalanceActionTypes).findIndex((value: string) => {return value === action.type}) !== -1)
     //    console.log('state.balanceReducer', action.type, 'state', state, 'payload', action.payload);
 
     switch (action.type) {
-        case BalanceActionTypes.BALANCE_CONNECT: {
+        case BalancerActionTypes.BALANCER_CONNECT: {
             return { ...state,
                 readingStarted: true,
             };
         }
-        case BalanceActionTypes.BALANCE_DISCONNECT: {
+        case BalancerActionTypes.BALANCER_DISCONNECT: {
             return { ...state,
                 connected: false,
             };
         }
-        case BalanceActionTypes.BALANCE_STARTED: {
+        case BalancerActionTypes.BALANCER_STARTED: {
             return { ...state,
                 connected: action.payload.connected,
                 serialPort: action.payload.serialPort,
@@ -37,7 +37,7 @@ export const balanceReducer = (
                 serialWriter: action.payload.serialWriter,
             };
         }
-        case BalanceActionTypes.BALANCE_STOPPED: {
+        case BalancerActionTypes.BALANCER_STOPPED: {
             return { ...state,
                 connected: false,
                 serialPort: undefined,
@@ -45,13 +45,13 @@ export const balanceReducer = (
                 serialWriter: undefined,
             };
         }
-        case BalanceActionTypes.BALANCE_UPDATE_DRIVE_STATE: {
+        case BalancerActionTypes.BALANCER_UPDATE_DRIVE_STATE: {
             return { ...state,
                 rpm: action.payload.rpm,
                 angle: action.payload.angle,
             };
         }
-        case BalanceActionTypes.BALANCE_READING_STOPPED: {
+        case BalancerActionTypes.BALANCER_READING_STOPPED: {
             return { ...state,
                 readingStarted: false,
             };

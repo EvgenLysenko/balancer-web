@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { Button } from '../controls/button/Button';
-import { balanceConnect, balanceDisconnect, balanceRotationStart } from '../../state/ducks/balance/actions';
+import { balancerConnect, balancerDisconnect, balancerRotationStart } from '../../state/ducks/balancer/actions';
 import { IApplicationState } from '../../state/ducks';
 import { graphRequest } from '../../state/ducks/graph/actions';
 
@@ -13,14 +13,14 @@ interface IProps {
     chartRequested: boolean;
     rpm: number;
     angle: number;
-    balanceConnect: () => void;
+    balancerConnect: () => void;
     graphRequest: () => void;
-    balanceDisconnect: () => void;
-    balanceRotationStart: () => void;
+    balancerDisconnect: () => void;
+    balancerRotationStart: () => void;
 }
 
 const TopPanel = ({ connected, readingStarted, chartRequested, rpm, angle,
-    balanceConnect, balanceDisconnect, graphRequest, balanceRotationStart
+    balancerConnect, balancerDisconnect, graphRequest, balancerRotationStart
 }: IProps) => {
     return (
         <div className="top-panel-container">
@@ -33,7 +33,7 @@ const TopPanel = ({ connected, readingStarted, chartRequested, rpm, angle,
                 </div>
                 <Button
                     label="Start"
-                    onClick={balanceRotationStart}
+                    onClick={balancerRotationStart}
                 />
                 <Button
                     label={chartRequested ? "Chart Requested" : "Request Chart"}
@@ -44,7 +44,7 @@ const TopPanel = ({ connected, readingStarted, chartRequested, rpm, angle,
                 />
                 <Button
                     label={connected ? "Disconnect" : "Connect"}
-                    onClick={connected ? balanceDisconnect : balanceConnect}
+                    onClick={connected ? balancerDisconnect : balancerConnect}
                 />
             </div>
         </div>
@@ -53,20 +53,20 @@ const TopPanel = ({ connected, readingStarted, chartRequested, rpm, angle,
 
 const mapStateToProps = (state: IApplicationState) => {
     return {
-        connected: state.balance.connected,
-        rpm: state.balance.rpm,
-        angle: state.balance.angle,
-        readingStarted: state.balance.readingStarted,
+        connected: state.balancer.connected,
+        rpm: state.balancer.rpm,
+        angle: state.balancer.angle,
+        readingStarted: state.balancer.readingStarted,
         chartRequested: state.graph.chartRequested,
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        balanceConnect: () => dispatch(balanceConnect()),
+        balancerConnect: () => dispatch(balancerConnect()),
         graphRequest: () => dispatch(graphRequest()),
-        balanceDisconnect: () => dispatch(balanceDisconnect()),
-        balanceRotationStart: () => dispatch(balanceRotationStart()),
+        balancerDisconnect: () => dispatch(balancerDisconnect()),
+        balancerRotationStart: () => dispatch(balancerRotationStart()),
     };
 };
 

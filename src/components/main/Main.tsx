@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import TopPanel from '../top-panel/TopPanel';
 import { IApplicationState } from '../../state/ducks';
-import { balanceCheckUpdated } from '../../state/ducks/balance/actions';
+import { balancerCheckUpdated } from '../../state/ducks/balancer/actions';
 import Graph from '../graph/Graph';
 import AngleWheel from '../angle-wheel/AngleWheel';
 
@@ -10,15 +10,15 @@ import './style.css';
 
 interface IProps {
     connected: boolean;
-    balanceCheckUpdated: () => void;
+    balancerCheckUpdated: () => void;
 }
 
-const Main = ({ balanceCheckUpdated }: IProps) => {
+const Main = ({ balancerCheckUpdated }: IProps) => {
     useEffect(() => {
         console.log("useEffect", "setInterval(() => balanceUpdate(), 1000)");
-        const interval = setInterval(() => balanceCheckUpdated(), 100);
+        const interval = setInterval(() => balancerCheckUpdated(), 100);
         return () => clearInterval(interval);
-    }, [balanceCheckUpdated]);
+    }, [balancerCheckUpdated]);
 
     return (
         <div className="main">
@@ -33,14 +33,14 @@ const Main = ({ balanceCheckUpdated }: IProps) => {
 
 const mapStateToProps = (state: IApplicationState) => {
     return {
-        connected: state.balance.connected,
-        serialReader: state.balance.serialReader,
+        connected: state.balancer.connected,
+        serialReader: state.balancer.serialReader,
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        balanceCheckUpdated: () => dispatch(balanceCheckUpdated()),
+        balancerCheckUpdated: () => dispatch(balancerCheckUpdated()),
     };
 };
 

@@ -1,8 +1,8 @@
 import { all, call, delay, fork, put, select, takeEvery } from "redux-saga/effects";
 import { PayloadAction, TypeConstant } from "typesafe-actions";
 import { IApplicationState } from "..";
-import { BalanceActionTypes, IBalanceState } from "./types";
-import { balanceReadingStopped, balanceStarted, balanceStopped, balanceUpdateDriveState } from "./actions";
+import { BalancerActionTypes, IBalancerState } from "./types";
+import { balancerReadingStopped, balancerStarted, balancerStopped, balancerUpdateDriveState } from "./actions";
 import ErrorUtils from "../../../utils/ErrorUtils";
 import { BalancerParser } from "../../../balancer/BalancerParser";
 import { IGraphState } from "../graph/types";
@@ -72,9 +72,9 @@ export const makeWrite = async (writer: any, text: string): Promise<any> => {
     }
 }
 
-function* handleBalanceConnected(action: PayloadAction<TypeConstant, IBalanceState>): Generator {
+function* handleBalancerConnected(action: PayloadAction<TypeConstant, IBalancerState>): Generator {
     try {
-        const { connected } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        const { connected } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
 
         const res = yield call(makeCallPort);
 
@@ -86,38 +86,38 @@ function* handleBalanceConnected(action: PayloadAction<TypeConstant, IBalanceSta
             const reader = port.readable?.getReader();
             const writer = port.writable?.getWriter();
             console.log(usbProductId, usbVendorId);
-            yield put(balanceStarted(!connected, port, reader, writer));
+            yield put(balancerStarted(!connected, port, reader, writer));
         }
     }
     catch (err) {
-        ErrorUtils.handleDefault("balancer - handleBalanceStart", err);
+        ErrorUtils.handleDefault("balancer - handleBalancerStart", err);
     }
 }
 
-function* handleBalanceDisconnect(action: PayloadAction<TypeConstant, IBalanceState>): Generator {
+function* handleBalancerDisconnect(action: PayloadAction<TypeConstant, IBalancerState>): Generator {
     try {
-        const { connected } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        const { connected } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         if (!connected)
             return;
 
         const res = yield call(makeCallPort);
 
-        const { serialPort, serialReader } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        const { serialPort, serialReader } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         
-        yield put(balanceStopped());
+        yield put(balancerStopped());
 
     }
     catch (err) {
-        ErrorUtils.handleDefault("balancer - handleBalanceDisconnect", err);
+        ErrorUtils.handleDefault("balancer - handleBalancerDisconnect", err);
     }
 }
 
-function* handleBalanceCheckUpdated(action: PayloadAction<TypeConstant, IBalanceState>): Generator {
+function* handleBalancerCheckUpdated(action: PayloadAction<TypeConstant, IBalancerState>): Generator {
     try {
-        const { rpm, angle } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        const { rpm, angle } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
 
         if (rpm !== balancerParser.rpm || angle !== balancerParser.angle) {
-            yield put(balanceUpdateDriveState(balancerParser.rpm, balancerParser.angle));
+            yield put(balancerUpdateDriveState(balancerParser.rpm, balancerParser.angle));
         }
 
         const { updateTime } = (yield select((state: IApplicationState) => state.graph)) as IGraphState;
@@ -125,17 +125,17 @@ function* handleBalanceCheckUpdated(action: PayloadAction<TypeConstant, IBalance
             console.log("chartUpdated", updateTime, balancerParser.getChartUpdateTime());
             yield put(chartUpdated(balancerParser.getChartUpdateTime(), balancerParser.chartGetX(), [...balancerParser.chartGetY()]));
         }
-        //yield put(balanceUpdateValues(balancerParser.value1, balancerParser.value2, balancerParser.value3));
+        //yield put(balancerUpdateValues(balancerParser.value1, balancerParser.value2, balancerParser.value3));
     }
     catch (err) {
-        ErrorUtils.handleDefault("balancer - handleBalanceUpdate", err);
+        ErrorUtils.handleDefault("balancer - handleBalancerUpdate", err);
     }
 }
 
-function* handleBalanceStarted(action: PayloadAction<TypeConstant, IBalanceState>): Generator {
+function* handleBalancerStarted(action: PayloadAction<TypeConstant, IBalancerState>): Generator {
     try {
         while (true) {
-            const { connected, serialReader } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+            const { connected, serialReader } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
             if (!connected || serialReader == null)
                 break;
 
@@ -164,20 +164,20 @@ function* handleBalanceStarted(action: PayloadAction<TypeConstant, IBalanceState
         }
 
         console.log("stoped");
-        yield put(balanceReadingStopped());
+        yield put(balancerReadingStopped());
     }
     catch (err) {
-        ErrorUtils.handleDefault("balancer - handleBalanceStarted", err);
+        ErrorUtils.handleDefault("balancer - handleBalancerStarted", err);
     }
 }
 
-function* handleBalanceRotationStart(action: PayloadAction<TypeConstant, IGraphState>): Generator {
+function* handleBalancerRotationStart(action: PayloadAction<TypeConstant, IGraphState>): Generator {
     try {
-        const { connected } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        const { connected } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         if (!connected)
             return;
 
-        const { serialWriter } = (yield select((state: IApplicationState) => state.balance)) as IBalanceState;
+        const { serialWriter } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         if (serialWriter) {
             yield call(makeWrite, serialWriter, "$BAL,START\n");
         }
@@ -189,32 +189,32 @@ function* handleBalanceRotationStart(action: PayloadAction<TypeConstant, IGraphS
     }
 }
 
-function* watchBalanceConnected(): Generator {
-    yield takeEvery(BalanceActionTypes.BALANCE_CONNECT, handleBalanceConnected);
+function* watchBalancerConnected(): Generator {
+    yield takeEvery(BalancerActionTypes.BALANCER_CONNECT, handleBalancerConnected);
 }
 
-function* watchBalanceDisconnect(): Generator {
-    yield takeEvery(BalanceActionTypes.BALANCE_DISCONNECT, handleBalanceDisconnect);
+function* watchBalancerDisconnect(): Generator {
+    yield takeEvery(BalancerActionTypes.BALANCER_DISCONNECT, handleBalancerDisconnect);
 }
 
-function* watchBalanceStarted(): Generator {
-    yield takeEvery(BalanceActionTypes.BALANCE_STARTED, handleBalanceStarted);
+function* watchBalancerStarted(): Generator {
+    yield takeEvery(BalancerActionTypes.BALANCER_STARTED, handleBalancerStarted);
 }
 
-function* watchBalanceCheckUpdated(): Generator {
-    yield takeEvery(BalanceActionTypes.BALANCE_CHECK_UPDATED, handleBalanceCheckUpdated);
+function* watchBalancerCheckUpdated(): Generator {
+    yield takeEvery(BalancerActionTypes.BALANCER_CHECK_UPDATED, handleBalancerCheckUpdated);
 }
 
-function* watchBalanceRotationStart(): Generator {
-    yield takeEvery(BalanceActionTypes.BALANCE_ROTATION_START, handleBalanceRotationStart);
+function* watchBalancerRotationStart(): Generator {
+    yield takeEvery(BalancerActionTypes.BALANCER_ROTATION_START, handleBalancerRotationStart);
 }
 
-export function* balanceSaga() {
+export function* balancerSaga() {
     yield all([
-        fork(watchBalanceConnected),
-        fork(watchBalanceDisconnect),
-        fork(watchBalanceStarted),
-        fork(watchBalanceCheckUpdated),
-        fork(watchBalanceRotationStart),
+        fork(watchBalancerConnected),
+        fork(watchBalancerDisconnect),
+        fork(watchBalancerStarted),
+        fork(watchBalancerCheckUpdated),
+        fork(watchBalancerRotationStart),
     ]);
 }
