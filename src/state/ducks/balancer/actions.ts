@@ -22,8 +22,12 @@ export const balancerCheckUpdated = () => {
     return action(BalancerActionTypes.BALANCER_CHECK_UPDATED);
 }
 
-export const balancerUpdateDriveState = (rpm: number, angle: number) => {
-    return action(BalancerActionTypes.BALANCER_UPDATE_DRIVE_STATE, { rpm, angle });
+export const balancerUpdateDriveState = (driveSate: IDriveState) => {
+    return action(BalancerActionTypes.BALANCER_UPDATE_DRIVE_STATE, {
+        isIdle: driveSate.isIdle,
+        rpm: driveSate.rpm,
+        angle: driveSate.angle,
+     });
 }
 
 export const balancerReadingStart = () => {

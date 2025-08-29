@@ -7,6 +7,7 @@ import ErrorUtils from "../../../utils/ErrorUtils";
 import { BalancerParser } from "../../../balancer/BalancerParser";
 import { IGraphState } from "../graph/types";
 import { chartUpdated } from "../graph/actions";
+import { Balancer } from "../../../balancer/Balancer";
 
 export const balancerParser = new BalancerParser();
 
@@ -114,10 +115,10 @@ function* handleBalancerDisconnect(action: PayloadAction<TypeConstant, IBalancer
 
 function* handleBalancerCheckUpdated(action: PayloadAction<TypeConstant, IBalancerState>): Generator {
     try {
-        const { rpm, angle } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
+        const currentState = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
 
-        if (rpm !== balancerParser.rpm || angle !== balancerParser.angle) {
-            yield put(balancerUpdateDriveState(balancerParser.rpm, balancerParser.angle));
+        if (!Balancer.isSame(currentState, balancerParser)) {
+            yield put(balancerUpdateDriveState(balancerParser));
         }
 
         const { updateTime } = (yield select((state: IApplicationState) => state.graph)) as IGraphState;

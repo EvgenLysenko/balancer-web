@@ -6,6 +6,7 @@ interface IParseContext {
 
 
 export interface IDriveState {
+    isIdle: boolean;
     rpm: number;
     angle: number;
 }
@@ -19,6 +20,7 @@ export class BalancerParser implements IDriveState
     public value2: number = 0;
     public value3: number = 0;
 
+    public isIdle: boolean = false;
     public rpm: number = NaN;
     public angle: number = NaN;
 
@@ -390,6 +392,8 @@ export class BalancerParser implements IDriveState
     // "$BAL,DR,"
     protected parseDriveState(buf: Uint8Array, size: number) {
         const context: IParseContext = BalancerParser.newParseContext(8);
+
+        this.isIdle = BalancerParser.parseNumber(buf, size, context, 0) === 1;
         this.angle = BalancerParser.parseNumber(buf, size, context, NaN);
         this.rpm = BalancerParser.parseNumber(buf, size, context, NaN);
     }

@@ -6,3 +6,8 @@
     border-radius: 0.5em;
     cursor: pointer;
 }
+
+.balance-button.disabled {
+    color: gray;
+    cursor: default;
+}

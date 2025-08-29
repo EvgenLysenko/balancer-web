@@ -11,6 +11,7 @@ interface IProps {
     connected: boolean;
     readingStarted: boolean;
     chartRequested: boolean;
+    isIdle: boolean;
     rpm: number;
     angle: number;
     balancerConnect: () => void;
@@ -19,7 +20,7 @@ interface IProps {
     balancerRotationStart: () => void;
 }
 
-const TopPanel = ({ connected, readingStarted, chartRequested, rpm, angle,
+const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle,
     balancerConnect, balancerDisconnect, graphRequest, balancerRotationStart
 }: IProps) => {
     return (
@@ -34,6 +35,7 @@ const TopPanel = ({ connected, readingStarted, chartRequested, rpm, angle,
                 <Button
                     label="Start"
                     onClick={balancerRotationStart}
+                    enabled={isIdle}
                 />
                 <Button
                     label={chartRequested ? "Chart Requested" : "Request Chart"}
@@ -54,6 +56,7 @@ const TopPanel = ({ connected, readingStarted, chartRequested, rpm, angle,
 const mapStateToProps = (state: IApplicationState) => {
     return {
         connected: state.balancer.connected,
+        isIdle: state.balancer.isIdle,
         rpm: state.balancer.rpm,
         angle: state.balancer.angle,
         readingStarted: state.balancer.readingStarted,

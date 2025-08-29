@@ -7,6 +7,7 @@ export const initialState: IBalancerState = {
     serialReader: undefined,
     serialWriter: undefined,
     readingStarted: false,
+    isIdle: false,
     rpm: NaN,
     angle: NaN,
 }
@@ -47,6 +48,7 @@ export const balancerReducer = (
         }
         case BalancerActionTypes.BALANCER_UPDATE_DRIVE_STATE: {
             return { ...state,
+                isIdle: action.payload.isIdle,
                 rpm: action.payload.rpm,
                 angle: action.payload.angle,
             };

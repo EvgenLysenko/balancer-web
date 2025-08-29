@@ -1,11 +1,11 @@
-export interface IBalancerState {
+import { IDriveState } from "../../../balancer/BalancerParser";
+
+export interface IBalancerState extends IDriveState {
     connected: boolean;
     serialPort: any;
     serialReader: any;
     serialWriter: any;
     readingStarted: boolean;
-    rpm: number;
-    angle: number;
 }
 
 export const BalancerActionTypes = {
