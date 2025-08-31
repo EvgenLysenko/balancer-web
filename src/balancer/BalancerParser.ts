@@ -1,11 +1,5 @@
 import { Balancer } from "./Balancer";
-
-interface IParseContext {
-    startPos: number;
-    hasNext: boolean;
-    //isEmpty: boolean;
-}
-
+import { CsvParser } from "./CsvParser";
 
 export interface IDriveState {
     isIdle: boolean;
@@ -26,14 +20,11 @@ export class BalancerParser implements IDriveState
     protected readonly balancer: Balancer;
     public static chartSize = 255;
 
-    public time: number = 0;
-    public value1: number = 0;
-    public value2: number = 0;
-    public value3: number = 0;
-
     public isIdle: boolean = false;
     public rpm: number = NaN;
     public angle: number = NaN;
+
+    parser: CsvParser = new CsvParser();
 
     protected buf: Uint8Array = new Uint8Array(BalancerParser.chartSize);
     protected bufSize: number = 0;
@@ -45,11 +36,6 @@ export class BalancerParser implements IDriveState
             this.parseNext(ch);
         }
     }
-
-    protected stage: number = 0;
-    protected minus: boolean = false;
-    protected num: number = 0;
-    protected numIdx: number = 0;
 
     public chartX: number[] = Array.from({ length: BalancerParser.chartSize }, (value, index) => index);
     public chartY: number[] = new Array<number>(BalancerParser.chartSize);
@@ -79,7 +65,7 @@ export class BalancerParser implements IDriveState
     }
 
     public parseNext(ch: number) {
-        if (ch === 36) {
+        if (ch === 36) {// $
             this.bufSize = 1;
             this.buf[0] = ch;
         }
@@ -99,125 +85,6 @@ export class BalancerParser implements IDriveState
                 this.bufSize = 0;
             }
         }
-
-        switch (this.stage) {
-        case 0: 
-            if (ch === 36) {// $
-                this.stage = 1;
-                //console.log("$");
-            }
-            break;
-        case 1: 
-            if (ch === 77) {// M
-                this.stage = 2;
-                //console.log("M");
-            }
-            //else if (ch === 0x42) { // B
-            //    this.stage = 21;
-            //}
-            else {
-                this.stage = 0;
-            }
-            break;
-
-        case 2:
-            if (ch === 44) {// ,
-                //console.log(",");
-                this.minus = false;
-                this.num = 0;
-                this.numIdx = 0;
- 
-                this.stage = 3;
-            }
-            else {
-                this.stage = 0;
-            }
-
-            break;
-        case 3:
-            if (ch === 44) {// ,
-                //console.log(",");
-                if (this.numIdx >= 4) {
-                    this.stage = 0;
-                    //console.log(this.value1, this.value2, this.value3);
-                    break;
-                }
-
-                if (this.minus === true) {
-                    this.num = -this.num;
-                }
-
-                switch (this.numIdx) {
-                case 0: this.time = this.num; break;
-                case 1: this.value1 = this.num; break;
-                case 2: this.value2 = this.num; break;
-                case 3: this.value3 = this.num; break;
-                }
-
-                this.minus = false;
-                this.num = 0;
-                ++this.numIdx;
-            }
-            else if (ch === 45) { // -
-                //console.log("-");
-                this.minus = true;
-            }
-            else if (ch >= 48 && ch <= 57) { // 0 - 9
-                this.num *= 10;
-                this.num += ch - 48;
-                //console.log(this.num);
-            }
-            else {
-                this.stage = 0;
-                break;
-            }
-
-            break;
-
-        case 21:
-            if (ch === 0x41) {// A
-                this.stage = 22;
-                //console.log("A");
-            }
-            else {
-                this.stage = 0;
-            }
-            break;
-
-        case 22:
-            if (ch === 0x4C) {// L
-                this.stage = 23;
-                //console.log("L");
-            }
-            else {
-                this.stage = 0;
-            }
-            break;
-
-        case 23:
-            if (ch === 0x2C) {// ,
-                this.stage = 24;
-                //console.log(",");
-            }
-            else {
-                this.stage = 0;
-            }
-            break;
-
-        case 24:
-            if (ch === 0x2C) {// ,
-                this.stage = 24;
-                //console.log(",");
-            }
-            else {
-                this.stage = 0;
-            }
-            break;
-
-        default:
-            this.stage = 0;
-            break;
-        }
     }
 
     public static checkStartWith(buf: Uint8Array, size: number, text: string): boolean {
@@ -231,10 +98,8 @@ export class BalancerParser implements IDriveState
         return true;
     }
 
-    //const uint8Array: Uint8Array = encoder.encode(myString);
     protected decoder = new TextDecoder('utf-8'); // Specify the encoding, e.g., 'utf-8'
     protected encoder = new TextEncoder();
-
 
     protected parseSentence(buf: Uint8Array, size: number)
     {
@@ -248,55 +113,11 @@ export class BalancerParser implements IDriveState
         else if (BalancerParser.checkStartWith(buf, size, "$BAL,CHART,VAL,")) {
             //const str = this.decoder.decode(buf);
             //console.log(str);
-            let i = 15;
-            let idx = 0;
-            for (; i < size; ++i) {
-                const ch = buf[i];
-                if (ch === 0x2C) // ,
-                    break;
-
-                if (ch >= 0x30 && ch <= 0x39) { // 0 - 9
-                    idx *= 10;
-                    idx += ch - 0x30;
-                }
-                else {
-                    break;
-                }
-            }
-
-            let value = 0;
-            let minus = false;
-            for (++i; i < size; ++i) {
-                const ch = buf[i];
-                if (ch === 0x2C) { // ,
-                    if (idx >= 0 && idx < this.chartX.length) {
-                        if (minus)
-                            value = -value;
-        
-                        this.chartY[idx] = value;
-                        this.chartUpdatedTime = new Date();
-
-                        minus = false;
-                        value = 0;
-                        ++idx;
-                    }
-                }
-                else if (ch === 0x2D) { // -
-                    minus = true;
-                }
-                else if (ch >= 0x30 && ch <= 0x39) { // 0 - 9
-                    value *= 10;
-                    value += ch - 0x30;
-                }
-                else {
-                    break;
-                }
-            }
+            this.parser.parseStart(buf, size, 15);
+            let idx = this.parser.parseNumber(NaN);
+            let value = this.parser.parseNumber(NaN);
 
             if (idx >= 0 && idx < this.chartX.length) {
-                if (minus)
-                    value = -value;
-
                 this.chartY[idx] = value;
                 this.chartUpdatedTime = new Date();
             }
@@ -306,124 +127,38 @@ export class BalancerParser implements IDriveState
         else if (BalancerParser.checkStartWith(buf, size, "$BAL,RPM,")) {
             //const str = this.decoder.decode(buf);
             //console.log(str);
-            
-            let i = 9;
-            let rpm = 0;
-            let minus = false;
-            for (; i < size; ++i) {
-                const ch = buf[i];
-                if (ch === 0x2C) // ,
-                    break;
-
-                if (ch >= 0x30 && ch <= 0x39) { // 0 - 9
-                    rpm *= 10;
-                    rpm += ch - 0x30;
-                }
-                else if (ch === 0x2D) { // -
-                    minus = true;
-                }
-                else {
-                    break;
-                }
-            }
-
-            if (minus)
-                rpm = -rpm;
-            //console.log(rpm);
-
-            this.rpm = rpm;
+            this.parser.parseStart(buf, size, 9);
+            this.rpm = this.parser.parseNumber(NaN);
             console.log(this.rpm);
         }
         else if (BalancerParser.checkStartWith(buf, size, "$BAL,DR,")) {
-            this.parseDriveState(buf, size);
+            this.parser.parseStart(buf, size, 8);
+            this.parseDriveState();
         }
         else if (BalancerParser.checkStartWith(buf, size, "$BAL,RES,")) {
-            BalancerParser.parseBalanceResult(this.balancer, buf, size);
+            this.parser.parseStart(buf, size, 9);
+            this.parseBalanceResult();
         }
         //console.log(buf, size);
     }
 
-    public static newParseContext(startPos: number): IParseContext {
-        return {
-            startPos: startPos,
-            hasNext: true,
-            //isEmpty: false,
-        };
-    }
-
-    public static parseNumber(buf: Uint8Array, size: number, context: IParseContext, defaultValue: number): number {
-        if (!context.hasNext)
-            return defaultValue;
-
-        if (context.startPos >= size) {
-            context.hasNext = false;
-            return defaultValue;
-        }
-
-        let i = context.startPos;
-        let value = 0;
-        let minus = false;
-        for (; i < size; ++i) {
-            const ch = buf[i];
-            if (ch === 0x2C) { // ,
-                context.hasNext = true;
-                context.startPos = i + 1;
-                break;
-            }
-
-            if (ch >= 0x30 && ch <= 0x39) { // 0 - 9
-                value *= 10;
-                value += ch - 0x30;
-            }
-            else if (ch === 0x2D) { // -
-                minus = true;
-            }
-            else {
-                break;
-            }
-        }
-
-        if (minus)
-            value = -value;
-        //console.log(rpm);
-
-        for (; i < size; ++i) {
-            const ch = buf[i];
-            if (ch === 0x2C) { // ,
-                context.hasNext = true;
-                context.startPos = i + 1;
-                return value;
-            }
-        }
-
-        if (i >= size) {
-            context.hasNext = false;
-        }
-
-        return value;
-    }
-
     // "$BAL,DR,"
-    protected parseDriveState(buf: Uint8Array, size: number) {
-        const context: IParseContext = BalancerParser.newParseContext(8);
-
-        this.isIdle = BalancerParser.parseNumber(buf, size, context, 0) === 1;
-        this.angle = BalancerParser.parseNumber(buf, size, context, NaN);
-        this.rpm = BalancerParser.parseNumber(buf, size, context, NaN);
+    protected parseDriveState() {
+        this.isIdle = this.parser.parseNumber(0) === 1;
+        this.angle = this.parser.parseNumber(NaN);
+        this.rpm = this.parser.parseNumber(NaN);
     }
 
     // "$BAL,RES,"
-    public static parseBalanceResult(balancer: Balancer, buf: Uint8Array, size: number) {
-        const context: IParseContext = BalancerParser.newParseContext(9);
-
-        balancer.disbalance.angle = BalancerParser.parseNumber(buf, size, context, NaN);
-        balancer.disbalance.value = BalancerParser.parseNumber(buf, size, context, NaN);
+    public parseBalanceResult() {
+        this.balancer.disbalance.angle = this.parser.parseNumber(NaN);
+        this.balancer.disbalance.value = this.parser.parseNumber(NaN);
     }
 
     public testDriveState(text: string, isIdle: boolean, angle: number, rpm: number) {
         const buf: Uint8Array = this.encoder.encode(text);
-        const context: IParseContext = BalancerParser.newParseContext(8);
-        this.parseDriveState(buf, buf.length);
+        this.parser.parseStart(buf, buf.length, 8);
+        this.parseDriveState();
         console.log("TEST: " + text, this.isIdle, this.angle, this.rpm,
             this.isIdle === isIdle && isSameNumbers(this.angle, angle) && isSameNumbers(this.rpm, rpm) ? "OK" : "FAILED" );
     }
@@ -438,8 +173,8 @@ export class BalancerParser implements IDriveState
         this.testDriveState("$BAL,DR,0,-234*AA", false, -234, NaN);
 
         const buf = this.encoder.encode("$BAL,RES,-234,1234567890*AA");
-        const context = BalancerParser.newParseContext(9);
-        BalancerParser.parseBalanceResult(this.balancer, buf, buf.length);
+        this.parser.parseStart(buf, buf.length, 9);
+        this.parseBalanceResult();
         console.log("TEST: $BAL,RES,-234,1234567890*AA", this.balancer.disbalance.angle, this.balancer.disbalance.value);
     }
 }
