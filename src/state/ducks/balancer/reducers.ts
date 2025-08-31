@@ -1,3 +1,4 @@
+import { BalancerRotationStartState } from "../../../balancer/Balancer";
 import { BalancerActionTypes, IBalancerState } from "./types";
 import { PayloadAction, TypeConstant } from "typesafe-actions";
 
@@ -10,7 +11,12 @@ export const initialState: IBalancerState = {
     isIdle: false,
     rpm: NaN,
     angle: NaN,
-    disbalance: { angle: 0, value: 0 }
+    disbalance: { angle: 0, value: 0 },
+    disbalanceZero: { angle: 0, value: 0 },
+    disbalanceLeft: { angle: 0, value: 0 },
+    disbalanceRight: { angle: 0, value: 0 },
+    disbalenceChangeTime: 0,
+    rotationStartStage: undefined as unknown as BalancerRotationStartState,
 }
 
 export const balancerReducer = (
@@ -47,11 +53,25 @@ export const balancerReducer = (
                 serialWriter: undefined,
             };
         }
+        case BalancerActionTypes.BALANCER_ROTATION_START: {
+            return { ...state,
+                rotationStartStage: action.payload.rotationStartStage,
+            };
+        }
         case BalancerActionTypes.BALANCER_UPDATE_DRIVE_STATE: {
             return { ...state,
                 isIdle: action.payload.isIdle,
                 rpm: action.payload.rpm,
                 angle: action.payload.angle,
+            };
+        }
+        case BalancerActionTypes.BALANCER_DISBALANCE_UPDATE: {
+            return { ...state,
+                disbalenceChangeTime: action.payload.disbalenceChangeTime,
+                disbalance: action.payload.disbalance,
+                disbalanceZero: action.payload.disbalanceZero,
+                disbalanceLeft: action.payload.disbalanceLeft,
+                disbalanceRight: action.payload.disbalanceZero,
             };
         }
         case BalancerActionTypes.BALANCER_DISBALANCE_UPDATED: {

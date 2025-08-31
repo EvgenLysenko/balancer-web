@@ -1,4 +1,4 @@
-import { IDisbalance } from "../../../balancer/Balancer";
+import { BalancerRotationStartState, IDisbalance } from "../../../balancer/Balancer";
 import { IDriveState } from "../../../balancer/BalancerParser";
 
 export interface IBalancerState extends IDriveState {
@@ -8,6 +8,11 @@ export interface IBalancerState extends IDriveState {
     serialWriter: any;
     readingStarted: boolean;
     disbalance: IDisbalance;
+    disbalanceZero: IDisbalance;
+    disbalanceLeft: IDisbalance;
+    disbalanceRight: IDisbalance;
+    disbalenceChangeTime: number;
+    rotationStartStage: BalancerRotationStartState;
 }
 
 export const BalancerActionTypes = {
@@ -21,4 +26,5 @@ export const BalancerActionTypes = {
     BALANCER_READING_STOPPED: "@@balancer/BALANCER_READING_STOPPED",
     BALANCER_ROTATION_START: "@@balancer/BALANCER_ROTATION_START",
     BALANCER_DISBALANCE_UPDATED: "@@balancer/BALANCER_DISBALANCE_UPDATED",
+    BALANCER_DISBALANCE_UPDATE: "@@balancer/BALANCER_DISBALANCE_UPDATE",
 };

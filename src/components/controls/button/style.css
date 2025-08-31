@@ -5,6 +5,8 @@
     border: 1px solid lightgray;
     border-radius: 0.5em;
     cursor: pointer;
+    text-align: center;
+    height: 1.5rem;
 }
 
 .balance-button.disabled {

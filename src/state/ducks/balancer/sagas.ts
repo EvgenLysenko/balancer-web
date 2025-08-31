@@ -2,7 +2,7 @@ import { all, call, delay, fork, put, select, takeEvery } from "redux-saga/effec
 import { PayloadAction, TypeConstant } from "typesafe-actions";
 import { IApplicationState } from "..";
 import { BalancerActionTypes, IBalancerState } from "./types";
-import { balancerDisbalanceUpdated, balancerReadingStopped, balancerStarted, balancerStopped, balancerUpdateDriveState } from "./actions";
+import { balancerDisbalanceUpdate, balancerDisbalanceUpdated, balancerReadingStopped, balancerStarted, balancerStopped, balancerUpdateDriveState } from "./actions";
 import ErrorUtils from "../../../utils/ErrorUtils";
 import { BalancerParser } from "../../../balancer/BalancerParser";
 import { IGraphState } from "../graph/types";
@@ -122,6 +122,17 @@ function* handleBalancerCheckUpdated(action: PayloadAction<TypeConstant, IBalanc
             yield put(balancerUpdateDriveState(balancerParser));
         }
 
+        if (currentState.disbalenceChangeTime !== balancer.getDisbalenceChangeTime) {
+            console.log("disbalance change", balancer.disbalance);
+            yield put(balancerDisbalanceUpdate(
+                balancer.getDisbalenceChangeTime,
+                { ...balancer.disbalance },
+                { ...balancer.disbalanceZero },
+                { ...balancer.disbalanceLeft },
+                { ...balancer.disbalanceRight }
+            ));
+        }
+
         if (currentState.disbalance.angle !== balancer.disbalance.angle || currentState.disbalance.value !== balancer.disbalance.value) {
             console.log("disbalance changed", balancer.disbalance);
             yield put(balancerDisbalanceUpdated({ ...balancer.disbalance }));
@@ -178,7 +189,7 @@ function* handleBalancerStarted(action: PayloadAction<TypeConstant, IBalancerSta
     }
 }
 
-function* handleBalancerRotationStart(action: PayloadAction<TypeConstant, IGraphState>): Generator {
+function* handleBalancerRotationStart(action: PayloadAction<TypeConstant, IBalancerState>): Generator {
     try {
         const { connected } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         if (!connected)
@@ -186,6 +197,7 @@ function* handleBalancerRotationStart(action: PayloadAction<TypeConstant, IGraph
 
         const { serialWriter } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         if (serialWriter) {
+            const command = "$BAL,START," + action.payload.rotationStartStage + "\n";
             yield call(makeWrite, serialWriter, "$BAL,START\n");
         }
 

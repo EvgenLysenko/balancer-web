@@ -2,7 +2,7 @@ export interface IGraphState {
     x: number[];
     y: number[];
     tmp: number;
-    updateTime: Date;
+    updateTime: number;
     chartRequested: boolean;
 }
 

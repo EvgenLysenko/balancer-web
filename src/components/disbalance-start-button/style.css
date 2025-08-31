@@ -1,0 +1,18 @@
+.disbalance-button {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    color: darkcyan;
+
+    .disbalance-button-param {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        gap: 0.5em;
+
+        .disbalance-button-param-label {
+            color: black;
+        }
+    }
+}

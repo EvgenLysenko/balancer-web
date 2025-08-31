@@ -4,7 +4,8 @@ import { Button } from '../controls/button/Button';
 import { balancerConnect, balancerDisconnect, balancerRotationStart } from '../../state/ducks/balancer/actions';
 import { IApplicationState } from '../../state/ducks';
 import { graphRequest } from '../../state/ducks/graph/actions';
-import { IDisbalance } from '../../balancer/Balancer';
+import { BalancerRotationStartState, IDisbalance } from '../../balancer/Balancer';
+import DisbalanceStartButton from '../disbalance-start-button/DisbalanceStartButton';
 
 import "./style.css";
 
@@ -16,13 +17,16 @@ interface IProps {
     rpm: number;
     angle: number;
     disbalance: IDisbalance;
+    disbalanceZero: IDisbalance;
+    disbalanceLeft: IDisbalance;
+    disbalanceRight: IDisbalance;
     balancerConnect: () => void;
     graphRequest: () => void;
     balancerDisconnect: () => void;
-    balancerRotationStart: () => void;
+    balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => void;
 }
 
-const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle, disbalance,
+const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle, disbalance, disbalanceZero, disbalanceLeft, disbalanceRight,
     balancerConnect, balancerDisconnect, graphRequest, balancerRotationStart
 }: IProps) => {
     return (
@@ -34,17 +38,29 @@ const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angl
                 <div>
                     RPM: {isNaN(rpm) ? "--" : rpm.toString()}
                 </div>
-                <div>
-                    Disbalance: {isNaN(disbalance.angle) ? "--" : disbalance.angle.toFixed(2)} / {isNaN(disbalance.value) ? "--" : disbalance.value.toString()}
-                </div>
-                <Button
+                <DisbalanceStartButton
                     label="Start"
-                    onClick={balancerRotationStart}
-                    enabled={isIdle}
+                    disbalance={disbalanceZero}
+                    rotationStartStage={BalancerRotationStartState.Zero}
+                />
+                <DisbalanceStartButton
+                    label="Start L"
+                    disbalance={disbalanceLeft}
+                    rotationStartStage={BalancerRotationStartState.Left}
+                />
+                <DisbalanceStartButton
+                    label="Start R"
+                    disbalance={disbalanceRight}
+                    rotationStartStage={BalancerRotationStartState.Right}
                 />
                 <Button
                     label={chartRequested ? "Chart Requested" : "Request Chart"}
                     onClick={chartRequested ? graphRequest : graphRequest }
+                />
+                <DisbalanceStartButton
+                    label="Start Test"
+                    disbalance={disbalance}
+                    rotationStartStage={BalancerRotationStartState.Common}
                 />
                 <Button
                     label={readingStarted ? "Reading started" : "Reading NO"}
@@ -65,6 +81,9 @@ const mapStateToProps = (state: IApplicationState) => {
         rpm: state.balancer.rpm,
         angle: state.balancer.angle,
         disbalance: state.balancer.disbalance,
+        disbalanceZero: state.balancer.disbalanceZero,
+        disbalanceLeft: state.balancer.disbalanceLeft,
+        disbalanceRight: state.balancer.disbalanceRight,
         readingStarted: state.balancer.readingStarted,
         chartRequested: state.graph.chartRequested,
     };
@@ -75,7 +94,7 @@ const mapDispatchToProps = (dispatch: any) => {
         balancerConnect: () => dispatch(balancerConnect()),
         graphRequest: () => dispatch(graphRequest()),
         balancerDisconnect: () => dispatch(balancerDisconnect()),
-        balancerRotationStart: () => dispatch(balancerRotationStart()),
+        balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => dispatch(balancerRotationStart(rotationStartStage)),
     };
 };
 

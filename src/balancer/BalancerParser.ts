@@ -1,4 +1,4 @@
-import { Balancer } from "./Balancer";
+import { Balancer, BalancerRotationStartState } from "./Balancer";
 import { CsvParser } from "./CsvParser";
 
 export interface IDriveState {
@@ -41,7 +41,7 @@ export class BalancerParser implements IDriveState
     public chartY: number[] = new Array<number>(BalancerParser.chartSize);
     public chartRequested: boolean = false;
     public chartReceivedIdx: number = 0;
-    protected chartUpdatedTime: Date = new Date();
+    protected chartUpdatedTime: number = 0;
 
     public chartGetX(): number[] {
         return this.chartX;
@@ -60,7 +60,7 @@ export class BalancerParser implements IDriveState
         return this.chartReceivedIdx;
     }
 
-    public getChartUpdateTime(): Date {
+    public getChartUpdateTime(): number {
         return this.chartUpdatedTime;
     }
 
@@ -119,7 +119,7 @@ export class BalancerParser implements IDriveState
 
             if (idx >= 0 && idx < this.chartX.length) {
                 this.chartY[idx] = value;
-                this.chartUpdatedTime = new Date();
+                this.chartUpdatedTime = Date.now();
             }
 
             //console.log(idx, value);
@@ -139,6 +139,10 @@ export class BalancerParser implements IDriveState
             this.parser.parseStart(buf, size, 9);
             this.parseBalanceResult();
         }
+        else if (BalancerParser.checkStartWith(buf, size, "$BAL,DISB,")) {
+            this.parser.parseStart(buf, size, 10);
+            this.parseDisbalance();
+        }
         //console.log(buf, size);
     }
 
@@ -151,8 +155,32 @@ export class BalancerParser implements IDriveState
 
     // "$BAL,RES,"
     public parseBalanceResult() {
-        this.balancer.disbalance.angle = this.parser.parseNumber(NaN);
-        this.balancer.disbalance.value = this.parser.parseNumber(NaN);
+        let angle = this.parser.parseNumber(NaN);
+        let value = this.parser.parseNumber(NaN);
+        this.balancer.disbalanceUpdate(BalancerRotationStartState.Common, angle, value);
+    }
+
+    // "$BAL,DISB,"
+    public parseDisbalance() {
+        let stage = this.parser.parseString();
+        let angle = this.parser.parseNumber(NaN);
+        let value = this.parser.parseNumber(NaN);
+        this.balancer.disbalanceUpdate(BalancerRotationStartState.Common, angle, value);
+
+        stage = this.parser.parseString();
+        angle = this.parser.parseNumber(NaN);
+        value = this.parser.parseNumber(NaN);
+        this.balancer.disbalanceUpdate(BalancerRotationStartState.Zero, angle, value);
+
+        stage = this.parser.parseString();
+        angle = this.parser.parseNumber(NaN);
+        value = this.parser.parseNumber(NaN);
+        this.balancer.disbalanceUpdate(BalancerRotationStartState.Left, angle, value);
+
+        stage = this.parser.parseString();
+        angle = this.parser.parseNumber(NaN);
+        value = this.parser.parseNumber(NaN);
+        this.balancer.disbalanceUpdate(BalancerRotationStartState.Right, angle, value);
     }
 
     public testDriveState(text: string, isIdle: boolean, angle: number, rpm: number) {

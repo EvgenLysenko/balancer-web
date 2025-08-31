@@ -1,5 +1,3 @@
-import { Balancer } from "./Balancer";
-
 export class CsvParser
 {
     startPos: number = 0;
@@ -12,6 +10,39 @@ export class CsvParser
         this.size = size;
         this.startPos = startPos;
         this.hasNext = true;
+    }
+
+    public parseString(): string {
+        const defaultValue = "";
+
+        if (!this.hasNext)
+            return defaultValue;
+
+        if (this.startPos >= this.size) {
+            this.hasNext = false;
+            return defaultValue;
+        }
+
+        let i = this.startPos;
+        let value: string = "";
+        for (; i < this.size; ++i) {
+            const ch = this.buf[i];
+            if (ch === 0x2C) { // ,
+                this.hasNext = true;
+                this.startPos = i + 1;
+                break;
+            }
+            else if (ch === 0x2A) { // *
+                this.hasNext = false;
+                this.startPos = i + 1;
+                break;
+            }
+            else {
+                value += ch;
+            }
+        }
+
+        return value;
     }
 
     public parseNumber(defaultValue: number): number {

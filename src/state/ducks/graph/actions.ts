@@ -9,6 +9,6 @@ export const graphUpdated = (y: number[], tmp: number) => {
     return action(GraphActionTypes.GRAPH_UPDATED, { y, tmp });
 }
 
-export const chartUpdated = (updateTime: Date, x: number[], y: number[]) => {
+export const chartUpdated = (updateTime: number, x: number[], y: number[]) => {
     return action(GraphActionTypes.CHART_UPDATED, { updateTime, x,  y });
 }

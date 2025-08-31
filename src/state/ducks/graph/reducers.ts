@@ -8,7 +8,7 @@ export const initialState: IGraphState = {
     y: Array.from({ length: length }, (value, index) => NaN),
     //y: Array.from({ length: length }, (value, index) => index).map((value) => Math.sin(value / 180 * 3.14)),
     tmp: 0,
-    updateTime: new Date(),
+    updateTime: 0,
     chartRequested: false,
 }
 
