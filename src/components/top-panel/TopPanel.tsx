@@ -20,13 +20,14 @@ interface IProps {
     step1: IBalanceStep;
     step2: IBalanceStep;
     stepCalibration: IBalanceStep;
+    stepCurrent: IBalanceStep;
     balancerConnect: () => void;
     graphRequest: () => void;
     balancerDisconnect: () => void;
     balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => void;
 }
 
-const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle, step0, step1, step2, stepCalibration,
+const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle, step0, step1, step2, stepCalibration, stepCurrent,
     balancerConnect, balancerDisconnect, graphRequest, balancerRotationStart
 }: IProps) => {
     return (
@@ -65,6 +66,11 @@ const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angl
                 <Button
                     label={readingStarted ? "Reading started" : "Reading NO"}
                 />
+                <DisbalanceStartButton
+                    label="Current"
+                    balance={stepCurrent}
+                    rotationStartStage={BalancerRotationStartState.Common}
+                />
                 <Button
                     label={connected ? "Disconnect" : "Connect"}
                     onClick={connected ? balancerDisconnect : balancerConnect}
@@ -84,6 +90,7 @@ const mapStateToProps = (state: IApplicationState) => {
         step1: state.balancer.step1,
         step2: state.balancer.step2,
         stepCalibration: state.balancer.stepCalibration,
+        stepCurrent: state.balancer.stepCurrent,
         readingStarted: state.balancer.readingStarted,
         chartRequested: state.graph.chartRequested,
     };

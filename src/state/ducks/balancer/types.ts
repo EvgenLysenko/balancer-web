@@ -12,6 +12,7 @@ export interface IBalancerState extends IDriveState {
     step1: IBalanceStep;
     step2: IBalanceStep;
     stepCalibration: IBalanceStep;
+    stepCurrent: IBalanceStep;
     rotationStartStage: BalancerRotationStartState;
 }
 

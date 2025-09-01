@@ -43,6 +43,6 @@ export const balancerRotationStart = (rotationStartStage: BalancerRotationStartS
     return action(BalancerActionTypes.BALANCER_ROTATION_START, { rotationStartStage });
 }
 
-export const balancerStepUpdate = (disbalanceChangeTime: number, step0: IBalanceStep, step1: IBalanceStep, step2: IBalanceStep, stepCalibration: IBalanceStep) => {
-    return action(BalancerActionTypes.BALANCER_STEP_UPDATE, { disbalanceChangeTime, step0, step1, step2, stepCalibration });
+export const balancerStepUpdate = (disbalanceChangeTime: number, step0: IBalanceStep, step1: IBalanceStep, step2: IBalanceStep, stepCalibration: IBalanceStep, stepCurrent: IBalanceStep) => {
+    return action(BalancerActionTypes.BALANCER_STEP_UPDATE, { disbalanceChangeTime, step0, step1, step2, stepCalibration, stepCurrent });
 }

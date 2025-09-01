@@ -27,13 +27,23 @@ const DisbalanceStartButton = ({ label, rotationStartStage, isIdle, balance, bal
                 onClick={onButtonClick}
                 enabled={isIdle}
             />
+            <div className="disbalance-button-params-title">Disbalance</div>
             <div className="disbalance-button-param">
                 <div className="disbalance-button-param-angle">{isNaN(balance.left.angle) ? "--" : balance.left.angle.toFixed(2)}</div>
-                <div className="disbalance-button-param-weight">{}</div>
+                <div className="disbalance-button-param-weight">{isNaN(balance.left.value) ? "--" : balance.left.value.toString()}</div>
             </div>
             <div className="disbalance-button-param">
-                <div className="disbalance-button-param-label">Value: </div>
-                <div className="disbalance-button-param-value">{isNaN(balance.left.value) ? "--" : balance.left.value.toString()}</div>
+                <div className="disbalance-button-param-angle">{isNaN(balance.right.angle) ? "--" : balance.right.angle.toFixed(2)}</div>
+                <div className="disbalance-button-param-weight">{isNaN(balance.right.value) ? "--" : balance.right.value.toString()}</div>
+            </div>
+            <div className="disbalance-button-params-title">Vector</div>
+            <div className="disbalance-button-param">
+                <div className="disbalance-button-param-angle">{isNaN(balance.lVector.x) ? "--" : balance.lVector.x}</div>
+                <div className="disbalance-button-param-weight">{isNaN(balance.lVector.y) ? "--" : balance.lVector.y}</div>
+            </div>
+            <div className="disbalance-button-param">
+                <div className="disbalance-button-param-angle">{isNaN(balance.rVector.x) ? "--" : balance.rVector.x}</div>
+                <div className="disbalance-button-param-weight">{isNaN(balance.rVector.y) ? "--" : balance.rVector.y}</div>
             </div>
         </div>
     );

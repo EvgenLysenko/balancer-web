@@ -47,7 +47,7 @@ const options = {
     },
 };
   
-const labels =  Array.from({ length: 36 }, (value, index) => index * 10);
+const labels =  Array.from({ length: 360 }, (value, index) => index);
 //const data = labels.map((value) => Math.sin(value * 3.14 / 180) * 100);
 const data = labels.map((value) => NaN);
 

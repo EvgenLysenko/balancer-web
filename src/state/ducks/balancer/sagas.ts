@@ -131,6 +131,7 @@ function* handleBalancerCheckUpdated(action: PayloadAction<TypeConstant, IBalanc
                 Balancer.isStepsSame(currentState.step1, balancer.step1) ? currentState.step1 : new BalanceStep(balancer.step1),
                 Balancer.isStepsSame(currentState.step2, balancer.step2) ? currentState.step2 : new BalanceStep(balancer.step2),
                 Balancer.isStepsSame(currentState.stepCalibration, balancer.stepCalibration) ? currentState.stepCalibration : new BalanceStep(balancer.stepCalibration),
+                Balancer.isStepsSame(currentState.stepCurrent, balancer.stepCurrent) ? currentState.stepCurrent : new BalanceStep(balancer.stepCurrent),
             ));
         }
 
@@ -194,7 +195,7 @@ function* handleBalancerRotationStart(action: PayloadAction<TypeConstant, IBalan
         const { serialWriter } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         if (serialWriter) {
             const command = "$BAL,START," + action.payload.rotationStartStage + "\n";
-            yield call(makeWrite, serialWriter, "$BAL,START\n");
+            yield call(makeWrite, serialWriter, command);
         }
 
         //yield put(graphUpdated(y, newTmp));

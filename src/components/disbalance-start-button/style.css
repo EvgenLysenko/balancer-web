@@ -4,6 +4,10 @@
     font-weight: 600;
     color: darkcyan;
 
+    .disbalance-button-params-title {
+        color: black;
+    }
+    
     .disbalance-button-param {
         display: flex;
         flex-direction: row;

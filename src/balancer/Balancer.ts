@@ -25,6 +25,7 @@ export enum BalancerRotationStartState {
     Left = "LEFT",
     Right = "RIGHT",
     Common = "",
+    Current = "CURRENT",
 }
 
 export interface IBalanceStep {
@@ -67,14 +68,16 @@ export class Balancer
     public step1: BalanceStep = new BalanceStep();
     public step2: BalanceStep = new BalanceStep();
     public stepCalibration: BalanceStep = new BalanceStep();
+    public stepCurrent: BalanceStep = new BalanceStep();
 
     public static idxToStep(idx: number): BalancerRotationStartState {
         switch (idx) {
         case 0: return BalancerRotationStartState.Zero;
         case 1: return BalancerRotationStartState.Left;
         case 2: return BalancerRotationStartState.Right;
+        case 3: return BalancerRotationStartState.Common;
         default:
-            return BalancerRotationStartState.Common;
+            return BalancerRotationStartState.Current;
         }
     }
 
@@ -162,6 +165,8 @@ export class Balancer
             return this.updateStepIfChanged(this.step2, left, right, lVector, rVector);
         case BalancerRotationStartState.Common:
             return this.updateStepIfChanged(this.stepCalibration, left, right, lVector, rVector);
+        case BalancerRotationStartState.Current:
+            return this.updateStepIfChanged(this.stepCurrent, left, right, lVector, rVector);
         }
 
         return false;

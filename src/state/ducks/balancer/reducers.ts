@@ -16,6 +16,7 @@ export const initialState: IBalancerState = {
     step1: new BalanceStep(),
     step2: new BalanceStep(),
     stepCalibration: new BalanceStep(),
+    stepCurrent: new BalanceStep(),
     rotationStartStage: undefined as unknown as BalancerRotationStartState,
 }
 
@@ -72,6 +73,7 @@ export const balancerReducer = (
                 step1: action.payload.step1,
                 step2: action.payload.step2,
                 stepCalibration: action.payload.stepCalibration,
+                stepCurrent: action.payload.stepCurrent,
             };
         }
         case BalancerActionTypes.BALANCER_READING_STOPPED: {

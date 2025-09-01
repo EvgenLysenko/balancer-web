@@ -111,15 +111,22 @@ export class BalancerParser implements IDriveState
             //console.log(str);
         }
         else if (BalancerParser.checkStartWith(buf, size, "$BAL,CHART,VAL,")) {
-            //const str = this.decoder.decode(buf);
-            //console.log(str);
+            const str = this.decoder.decode(buf);
+            console.log(str);
             this.parser.parseStart(buf, size, 15);
-            let idx = this.parser.parseNumber(NaN);
-            let value = this.parser.parseNumber(NaN);
 
-            if (idx >= 0 && idx < this.chartX.length) {
-                this.chartY[idx] = value;
-                this.chartUpdatedTime = Date.now();
+            let idx = this.parser.parseNumber(NaN);
+            while (this.parser.hasNext) {
+                let value = this.parser.parseNumber(NaN);
+
+                if (idx >= 0 && idx < this.chartX.length) {
+                    this.chartY[idx] = value;
+                    this.chartUpdatedTime = Date.now();
+                    ++idx;
+                }
+                else {
+                    break;
+                }
             }
 
             //console.log(idx, value);
@@ -144,8 +151,16 @@ export class BalancerParser implements IDriveState
         //     this.parseDisbalance();
         // }
         else if (BalancerParser.checkStartWith(buf, size, "$BAL,STEP,")) {
+            const str = this.decoder.decode(buf);
+            console.log(str);
             this.parser.parseStart(buf, size, 10);
             this.parseStep();
+        }
+        else if (BalancerParser.checkStartWith(buf, size, "$BAL,CUR,")) {
+            const str = this.decoder.decode(buf);
+            console.log(str);
+            this.parser.parseStart(buf, size, 9);
+            this.parseCurrentDisbalance();
         }
         //console.log(buf, size);
     }
@@ -191,14 +206,6 @@ export class BalancerParser implements IDriveState
     public parseStep() {
         let idx = this.parser.parseNumber(NaN);
 
-        const left: Disbalance = new Disbalance();
-        const right: Disbalance = new Disbalance();
-
-        left.angle = this.parser.parseNumber(NaN);
-        left.value = this.parser.parseNumber(NaN);
-        right.angle = this.parser.parseNumber(NaN);
-        right.value = this.parser.parseNumber(NaN);
-
         const lVector: DisbalanceVector = new DisbalanceVector();
         const rVector: DisbalanceVector = new DisbalanceVector();
 
@@ -207,9 +214,37 @@ export class BalancerParser implements IDriveState
         rVector.x = this.parser.parseNumber(NaN);
         rVector.y = this.parser.parseNumber(NaN);
 
+        const left: Disbalance = new Disbalance();
+        const right: Disbalance = new Disbalance();
+
+        left.angle = this.parser.parseNumber(NaN);
+        left.value = this.parser.parseNumber(NaN);
+        right.angle = this.parser.parseNumber(NaN);
+        right.value = this.parser.parseNumber(NaN);
+
         const step: BalancerRotationStartState = Balancer.idxToStep(idx);
 
         this.balancer.updateStep(step, left, right, lVector, rVector);
+    }
+
+    public parseCurrentDisbalance() {
+        const lVector: DisbalanceVector = new DisbalanceVector();
+        const rVector: DisbalanceVector = new DisbalanceVector();
+
+        lVector.x = this.parser.parseNumber(NaN);
+        lVector.y = this.parser.parseNumber(NaN);
+        rVector.x = this.parser.parseNumber(NaN);
+        rVector.y = this.parser.parseNumber(NaN);
+
+        const left: Disbalance = new Disbalance();
+        const right: Disbalance = new Disbalance();
+
+        left.angle = this.parser.parseNumber(NaN);
+        left.value = this.parser.parseNumber(NaN);
+        right.angle = this.parser.parseNumber(NaN);
+        right.value = this.parser.parseNumber(NaN);
+
+        this.balancer.updateStepIfChanged(this.balancer.stepCurrent, left, right, lVector, rVector);
     }
  
     public testDriveState(text: string, isIdle: boolean, angle: number, rpm: number) {
