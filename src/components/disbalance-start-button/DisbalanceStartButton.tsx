@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-import { BalancerRotationStartState, IDisbalance } from '../../balancer/Balancer';
+import { BalancerRotationStartState, IBalanceStep, IDisbalance } from '../../balancer/Balancer';
 import { Button } from '../controls/button/Button';
 import { IApplicationState } from '../../state/ducks';
 import { balancerRotationStart } from '../../state/ducks/balancer/actions';
@@ -11,11 +11,11 @@ type IProps = {
     label?: string;
     rotationStartStage: BalancerRotationStartState;
     isIdle: boolean;
-    disbalance: IDisbalance;
+    balance: IBalanceStep;
     balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => void;
 };
 
-const DisbalanceStartButton = ({ label, rotationStartStage, isIdle, disbalance, balancerRotationStart }: IProps) => {
+const DisbalanceStartButton = ({ label, rotationStartStage, isIdle, balance, balancerRotationStart }: IProps) => {
     const onButtonClick = useCallback(() => balancerRotationStart(rotationStartStage)
         , [rotationStartStage, balancerRotationStart]
     );
@@ -25,15 +25,15 @@ const DisbalanceStartButton = ({ label, rotationStartStage, isIdle, disbalance, 
             <Button
                 label={label ?? "Start " + rotationStartStage.toString()}
                 onClick={onButtonClick}
-                enabled={true}
+                enabled={isIdle}
             />
             <div className="disbalance-button-param">
-                <div className="disbalance-button-param-label">Disbalance:</div>
-                <div className="disbalance-button-param-value">{isNaN(disbalance.angle) ? "--" : disbalance.angle.toFixed(2)}</div>
+                <div className="disbalance-button-param-angle">{isNaN(balance.left.angle) ? "--" : balance.left.angle.toFixed(2)}</div>
+                <div className="disbalance-button-param-weight">{}</div>
             </div>
             <div className="disbalance-button-param">
                 <div className="disbalance-button-param-label">Value: </div>
-                <div className="disbalance-button-param-value">{isNaN(disbalance.value) ? "--" : disbalance.value.toString()}</div>
+                <div className="disbalance-button-param-value">{isNaN(balance.left.value) ? "--" : balance.left.value.toString()}</div>
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import { BalancerRotationStartState } from "../../../balancer/Balancer";
+import { BalanceStep, BalancerRotationStartState } from "../../../balancer/Balancer";
 import { BalancerActionTypes, IBalancerState } from "./types";
 import { PayloadAction, TypeConstant } from "typesafe-actions";
 
@@ -11,11 +11,11 @@ export const initialState: IBalancerState = {
     isIdle: false,
     rpm: NaN,
     angle: NaN,
-    disbalance: { angle: 0, value: 0 },
-    disbalanceZero: { angle: 0, value: 0 },
-    disbalanceLeft: { angle: 0, value: 0 },
-    disbalanceRight: { angle: 0, value: 0 },
-    disbalenceChangeTime: 0,
+    disbalanceChangeTime: 0,
+    step0: new BalanceStep(),
+    step1: new BalanceStep(),
+    step2: new BalanceStep(),
+    stepCalibration: new BalanceStep(),
     rotationStartStage: undefined as unknown as BalancerRotationStartState,
 }
 
@@ -65,18 +65,13 @@ export const balancerReducer = (
                 angle: action.payload.angle,
             };
         }
-        case BalancerActionTypes.BALANCER_DISBALANCE_UPDATE: {
+        case BalancerActionTypes.BALANCER_STEP_UPDATE: {
             return { ...state,
-                disbalenceChangeTime: action.payload.disbalenceChangeTime,
-                disbalance: action.payload.disbalance,
-                disbalanceZero: action.payload.disbalanceZero,
-                disbalanceLeft: action.payload.disbalanceLeft,
-                disbalanceRight: action.payload.disbalanceZero,
-            };
-        }
-        case BalancerActionTypes.BALANCER_DISBALANCE_UPDATED: {
-            return { ...state,
-                disbalance: action.payload.disbalance,
+                disbalanceChangeTime: action.payload.disbalanceChangeTime,
+                step0: action.payload.step0,
+                step1: action.payload.step1,
+                step2: action.payload.step2,
+                stepCalibration: action.payload.stepCalibration,
             };
         }
         case BalancerActionTypes.BALANCER_READING_STOPPED: {

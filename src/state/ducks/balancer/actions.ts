@@ -1,7 +1,7 @@
 import { action } from "typesafe-actions";
 import { BalancerActionTypes } from "./types";
 import { IDriveState } from "../../../balancer/BalancerParser";
-import { BalancerRotationStartState, IDisbalance } from "../../../balancer/Balancer";
+import { BalancerRotationStartState, IBalanceStep, IDisbalance } from "../../../balancer/Balancer";
 
 export const balancerConnect = () => {
     return action(BalancerActionTypes.BALANCER_CONNECT);
@@ -43,10 +43,6 @@ export const balancerRotationStart = (rotationStartStage: BalancerRotationStartS
     return action(BalancerActionTypes.BALANCER_ROTATION_START, { rotationStartStage });
 }
 
-export const balancerDisbalanceUpdated = (disbalance: IDisbalance) => {
-    return action(BalancerActionTypes.BALANCER_DISBALANCE_UPDATED, { disbalance });
-}
-
-export const balancerDisbalanceUpdate = (disbalenceChangeTime: number, disbalance: IDisbalance, disbalanceZero: IDisbalance, disbalanceLeft: IDisbalance, disbalanceRight: IDisbalance) => {
-    return action(BalancerActionTypes.BALANCER_DISBALANCE_UPDATE, { disbalenceChangeTime, disbalance, disbalanceZero, disbalanceLeft, disbalanceRight });
+export const balancerStepUpdate = (disbalanceChangeTime: number, step0: IBalanceStep, step1: IBalanceStep, step2: IBalanceStep, stepCalibration: IBalanceStep) => {
+    return action(BalancerActionTypes.BALANCER_STEP_UPDATE, { disbalanceChangeTime, step0, step1, step2, stepCalibration });
 }

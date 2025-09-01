@@ -1,4 +1,4 @@
-import { Balancer, BalancerRotationStartState } from "./Balancer";
+import { Balancer, BalancerRotationStartState, Disbalance, DisbalanceVector } from "./Balancer";
 import { CsvParser } from "./CsvParser";
 
 export interface IDriveState {
@@ -135,13 +135,17 @@ export class BalancerParser implements IDriveState
             this.parser.parseStart(buf, size, 8);
             this.parseDriveState();
         }
-        else if (BalancerParser.checkStartWith(buf, size, "$BAL,RES,")) {
-            this.parser.parseStart(buf, size, 9);
-            this.parseBalanceResult();
-        }
-        else if (BalancerParser.checkStartWith(buf, size, "$BAL,DISB,")) {
+        // else if (BalancerParser.checkStartWith(buf, size, "$BAL,RES,")) {
+        //     this.parser.parseStart(buf, size, 9);
+        //     this.parseBalanceResult();
+        // }
+        // else if (BalancerParser.checkStartWith(buf, size, "$BAL,DISB,")) {
+        //     this.parser.parseStart(buf, size, 10);
+        //     this.parseDisbalance();
+        // }
+        else if (BalancerParser.checkStartWith(buf, size, "$BAL,STEP,")) {
             this.parser.parseStart(buf, size, 10);
-            this.parseDisbalance();
+            this.parseStep();
         }
         //console.log(buf, size);
     }
@@ -154,35 +158,60 @@ export class BalancerParser implements IDriveState
     }
 
     // "$BAL,RES,"
-    public parseBalanceResult() {
-        let angle = this.parser.parseNumber(NaN);
-        let value = this.parser.parseNumber(NaN);
-        this.balancer.disbalanceUpdate(BalancerRotationStartState.Common, angle, value);
-    }
+    // public parseBalanceResult() {
+    //     let angle = this.parser.parseNumber(NaN);
+    //     let value = this.parser.parseNumber(NaN);
+    //     this.balancer.disbalanceUpdate(BalancerRotationStartState.Common, angle, value);
+    // }
 
     // "$BAL,DISB,"
-    public parseDisbalance() {
-        let stage = this.parser.parseString();
-        let angle = this.parser.parseNumber(NaN);
-        let value = this.parser.parseNumber(NaN);
-        this.balancer.disbalanceUpdate(BalancerRotationStartState.Common, angle, value);
+    // public parseDisbalance() {
+    //     let stage = this.parser.parseString();
+    //     let angle = this.parser.parseNumber(NaN);
+    //     let value = this.parser.parseNumber(NaN);
+    //     this.balancer.disbalanceUpdate(BalancerRotationStartState.Common, angle, value);
 
-        stage = this.parser.parseString();
-        angle = this.parser.parseNumber(NaN);
-        value = this.parser.parseNumber(NaN);
-        this.balancer.disbalanceUpdate(BalancerRotationStartState.Zero, angle, value);
+    //     stage = this.parser.parseString();
+    //     angle = this.parser.parseNumber(NaN);
+    //     value = this.parser.parseNumber(NaN);
+    //     this.balancer.disbalanceUpdate(BalancerRotationStartState.Zero, angle, value);
 
-        stage = this.parser.parseString();
-        angle = this.parser.parseNumber(NaN);
-        value = this.parser.parseNumber(NaN);
-        this.balancer.disbalanceUpdate(BalancerRotationStartState.Left, angle, value);
+    //     stage = this.parser.parseString();
+    //     angle = this.parser.parseNumber(NaN);
+    //     value = this.parser.parseNumber(NaN);
+    //     this.balancer.disbalanceUpdate(BalancerRotationStartState.Left, angle, value);
 
-        stage = this.parser.parseString();
-        angle = this.parser.parseNumber(NaN);
-        value = this.parser.parseNumber(NaN);
-        this.balancer.disbalanceUpdate(BalancerRotationStartState.Right, angle, value);
+    //     stage = this.parser.parseString();
+    //     angle = this.parser.parseNumber(NaN);
+    //     value = this.parser.parseNumber(NaN);
+    //     this.balancer.disbalanceUpdate(BalancerRotationStartState.Right, angle, value);
+    // }
+
+     // "$BAL,STEP,"
+    public parseStep() {
+        let idx = this.parser.parseNumber(NaN);
+
+        const left: Disbalance = new Disbalance();
+        const right: Disbalance = new Disbalance();
+
+        left.angle = this.parser.parseNumber(NaN);
+        left.value = this.parser.parseNumber(NaN);
+        right.angle = this.parser.parseNumber(NaN);
+        right.value = this.parser.parseNumber(NaN);
+
+        const lVector: DisbalanceVector = new DisbalanceVector();
+        const rVector: DisbalanceVector = new DisbalanceVector();
+
+        lVector.x = this.parser.parseNumber(NaN);
+        lVector.y = this.parser.parseNumber(NaN);
+        rVector.x = this.parser.parseNumber(NaN);
+        rVector.y = this.parser.parseNumber(NaN);
+
+        const step: BalancerRotationStartState = Balancer.idxToStep(idx);
+
+        this.balancer.updateStep(step, left, right, lVector, rVector);
     }
-
+ 
     public testDriveState(text: string, isIdle: boolean, angle: number, rpm: number) {
         const buf: Uint8Array = this.encoder.encode(text);
         this.parser.parseStart(buf, buf.length, 8);
@@ -200,9 +229,9 @@ export class BalancerParser implements IDriveState
         this.testDriveState("$BAL,DR,1,-234,", true, -234, NaN);
         this.testDriveState("$BAL,DR,0,-234*AA", false, -234, NaN);
 
-        const buf = this.encoder.encode("$BAL,RES,-234,1234567890*AA");
+        const buf = this.encoder.encode("$BAL,STEP,0,-234,1234567890*AA");
         this.parser.parseStart(buf, buf.length, 9);
-        this.parseBalanceResult();
-        console.log("TEST: $BAL,RES,-234,1234567890*AA", this.balancer.disbalance.angle, this.balancer.disbalance.value);
+        this.parseStep();
+        console.log("TEST: $BAL,STEP,0,-234,1234567890*AA", this.balancer.step0);
     }
 }

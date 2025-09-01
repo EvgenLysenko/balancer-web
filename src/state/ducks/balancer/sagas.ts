@@ -2,12 +2,12 @@ import { all, call, delay, fork, put, select, takeEvery } from "redux-saga/effec
 import { PayloadAction, TypeConstant } from "typesafe-actions";
 import { IApplicationState } from "..";
 import { BalancerActionTypes, IBalancerState } from "./types";
-import { balancerDisbalanceUpdate, balancerDisbalanceUpdated, balancerReadingStopped, balancerStarted, balancerStopped, balancerUpdateDriveState } from "./actions";
+import { balancerReadingStopped, balancerStarted, balancerStepUpdate, balancerStopped, balancerUpdateDriveState } from "./actions";
 import ErrorUtils from "../../../utils/ErrorUtils";
 import { BalancerParser } from "../../../balancer/BalancerParser";
 import { IGraphState } from "../graph/types";
 import { chartUpdated } from "../graph/actions";
-import { Balancer } from "../../../balancer/Balancer";
+import { BalanceStep, Balancer } from "../../../balancer/Balancer";
 
 export const balancer = new Balancer();
 export const balancerParser = new BalancerParser(balancer);
@@ -122,20 +122,16 @@ function* handleBalancerCheckUpdated(action: PayloadAction<TypeConstant, IBalanc
             yield put(balancerUpdateDriveState(balancerParser));
         }
 
-        if (currentState.disbalenceChangeTime !== balancer.getDisbalenceChangeTime) {
-            console.log("disbalance change", balancer.disbalance);
-            yield put(balancerDisbalanceUpdate(
-                balancer.getDisbalenceChangeTime,
-                { ...balancer.disbalance },
-                { ...balancer.disbalanceZero },
-                { ...balancer.disbalanceLeft },
-                { ...balancer.disbalanceRight }
-            ));
-        }
+        if (currentState.disbalanceChangeTime !== balancer.getDisbalanceChangeTime) {
+            console.log("step change", currentState.disbalanceChangeTime, balancer.getDisbalanceChangeTime);
 
-        if (currentState.disbalance.angle !== balancer.disbalance.angle || currentState.disbalance.value !== balancer.disbalance.value) {
-            console.log("disbalance changed", balancer.disbalance);
-            yield put(balancerDisbalanceUpdated({ ...balancer.disbalance }));
+            yield put(balancerStepUpdate(
+                balancer.getDisbalanceChangeTime,
+                Balancer.isStepsSame(currentState.step0, balancer.step0) ? currentState.step0 : new BalanceStep(balancer.step0),
+                Balancer.isStepsSame(currentState.step1, balancer.step1) ? currentState.step1 : new BalanceStep(balancer.step1),
+                Balancer.isStepsSame(currentState.step2, balancer.step2) ? currentState.step2 : new BalanceStep(balancer.step2),
+                Balancer.isStepsSame(currentState.stepCalibration, balancer.stepCalibration) ? currentState.stepCalibration : new BalanceStep(balancer.stepCalibration),
+            ));
         }
 
         const { updateTime } = (yield select((state: IApplicationState) => state.graph)) as IGraphState;

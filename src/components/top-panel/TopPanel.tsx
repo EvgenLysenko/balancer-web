@@ -4,7 +4,7 @@ import { Button } from '../controls/button/Button';
 import { balancerConnect, balancerDisconnect, balancerRotationStart } from '../../state/ducks/balancer/actions';
 import { IApplicationState } from '../../state/ducks';
 import { graphRequest } from '../../state/ducks/graph/actions';
-import { BalancerRotationStartState, IDisbalance } from '../../balancer/Balancer';
+import { BalancerRotationStartState, IBalanceStep } from '../../balancer/Balancer';
 import DisbalanceStartButton from '../disbalance-start-button/DisbalanceStartButton';
 
 import "./style.css";
@@ -16,17 +16,17 @@ interface IProps {
     isIdle: boolean;
     rpm: number;
     angle: number;
-    disbalance: IDisbalance;
-    disbalanceZero: IDisbalance;
-    disbalanceLeft: IDisbalance;
-    disbalanceRight: IDisbalance;
+    step0: IBalanceStep;
+    step1: IBalanceStep;
+    step2: IBalanceStep;
+    stepCalibration: IBalanceStep;
     balancerConnect: () => void;
     graphRequest: () => void;
     balancerDisconnect: () => void;
     balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => void;
 }
 
-const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle, disbalance, disbalanceZero, disbalanceLeft, disbalanceRight,
+const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle, step0, step1, step2, stepCalibration,
     balancerConnect, balancerDisconnect, graphRequest, balancerRotationStart
 }: IProps) => {
     return (
@@ -40,17 +40,17 @@ const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angl
                 </div>
                 <DisbalanceStartButton
                     label="Start"
-                    disbalance={disbalanceZero}
+                    balance={step0}
                     rotationStartStage={BalancerRotationStartState.Zero}
                 />
                 <DisbalanceStartButton
                     label="Start L"
-                    disbalance={disbalanceLeft}
+                    balance={step1}
                     rotationStartStage={BalancerRotationStartState.Left}
                 />
                 <DisbalanceStartButton
                     label="Start R"
-                    disbalance={disbalanceRight}
+                    balance={step2}
                     rotationStartStage={BalancerRotationStartState.Right}
                 />
                 <Button
@@ -59,7 +59,7 @@ const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angl
                 />
                 <DisbalanceStartButton
                     label="Start Test"
-                    disbalance={disbalance}
+                    balance={stepCalibration}
                     rotationStartStage={BalancerRotationStartState.Common}
                 />
                 <Button
@@ -80,10 +80,10 @@ const mapStateToProps = (state: IApplicationState) => {
         isIdle: state.balancer.isIdle,
         rpm: state.balancer.rpm,
         angle: state.balancer.angle,
-        disbalance: state.balancer.disbalance,
-        disbalanceZero: state.balancer.disbalanceZero,
-        disbalanceLeft: state.balancer.disbalanceLeft,
-        disbalanceRight: state.balancer.disbalanceRight,
+        step0: state.balancer.step0,
+        step1: state.balancer.step1,
+        step2: state.balancer.step2,
+        stepCalibration: state.balancer.stepCalibration,
         readingStarted: state.balancer.readingStarted,
         chartRequested: state.graph.chartRequested,
     };
