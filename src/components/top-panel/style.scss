@@ -1,3 +1,5 @@
+@import '../../variables.scss';
+
 .top-panel-container {
     .top-panel {
         padding: 10px;
@@ -23,9 +25,9 @@
     }
 
     .drive-state-container {
-        box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.3);
-        border-radius: 0.5em;
-        padding: 0.5em;
+        box-shadow: $panel-box-shadow;
+        border-radius: $panel-border-radius;
+        padding: $panel-padding;
 
         .drive-state {
             display: grid;

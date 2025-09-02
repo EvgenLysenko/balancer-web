@@ -7,7 +7,7 @@ import Graph from '../graph/Graph';
 import AngleWheel from '../angle-wheel/AngleWheel';
 
 import './style.css';
-//import { balancerParser } from '../../state/ducks/balancer/sagas';
+import { balancerParser } from '../../state/ducks/balancer/sagas';
 
 interface IProps {
     angle: number;

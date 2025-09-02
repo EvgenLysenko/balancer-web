@@ -5,7 +5,7 @@ import { Button } from '../controls/button/Button';
 import { IApplicationState } from '../../state/ducks';
 import { balancerRotationStart } from '../../state/ducks/balancer/actions';
 
-import './style.css';
+import './style.scss';
 
 type IProps = {
     label?: string;

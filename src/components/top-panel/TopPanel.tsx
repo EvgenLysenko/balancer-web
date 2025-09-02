@@ -7,7 +7,7 @@ import { graphRequest } from '../../state/ducks/graph/actions';
 import { BalancerRotationStartState, IBalanceStep } from '../../balancer/Balancer';
 import DisbalanceStartButton from '../disbalance-start-button/DisbalanceStartButton';
 
-import "./style.css";
+import "./style.scss";
 
 interface IProps {
     connected: boolean;
