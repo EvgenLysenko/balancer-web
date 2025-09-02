@@ -9,6 +9,10 @@
     border-radius: 0.5em;
     padding: 0.5em;
 
+    &:hover {
+        background-color: #F8F8F8;
+    }
+
     .disbalance-button-title {
         text-align: center;
     }

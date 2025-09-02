@@ -7,9 +7,19 @@
     cursor: pointer;
     text-align: center;
     height: 1.5rem;
+
+    &:hover {
+        background-color: cadetblue;
+        color: black;
+    }
 }
 
 .balance-button.disabled {
     color: gray;
     cursor: default;
+    background-color: #F8F8F8;
+
+    &:hover {
+        background-color: #F8F8F8;
+    }
 }
