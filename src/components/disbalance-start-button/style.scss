@@ -1,13 +1,15 @@
+@import '../../variables.scss';
+
 .disbalance-button {
     display: flex;
     flex-direction: column;
-    font-weight: 600;
-    color: darkcyan;
+    font-weight: $input-font-weight;
+    color: $input-color;
 
-    background-color: white;
-    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.3);
-    border-radius: 0.5em;
-    padding: 0.5em;
+    background-color: $background-color;
+    box-shadow: $panel-box-shadow;
+    border-radius: $panel-border-radius;
+    padding: $panel-padding;
 
     &:hover {
         background-color: #F8F8F8;

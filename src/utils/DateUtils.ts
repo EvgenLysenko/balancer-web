@@ -1,4 +1,7 @@
 export default class DateUtils {
+    public static unixTime(): number {
+        return Date.now();
+    }
 
 	public static formatDate(date: Date): string {
 		return DateUtils.dateString(date);
