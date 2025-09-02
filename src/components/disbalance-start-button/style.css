@@ -4,19 +4,51 @@
     font-weight: 600;
     color: darkcyan;
 
+    background-color: white;
+    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.3);
+    border-radius: 0.5em;
+    padding: 0.5em;
+
+    .disbalance-button-title {
+        text-align: center;
+    }
+
     .disbalance-button-params-title {
+        text-align: left;
         color: black;
     }
-    
-    .disbalance-button-param {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        flex-wrap: nowrap;
-        gap: 0.5em;
 
+    .balance-button {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+    }
+    
+    .disbalance-button-params {
+        display: grid;
+        grid-template-columns: auto auto;
+        justify-content: space-between;
+        row-gap: 0.1em;
+        column-gap: 0.5em;
+
+        .disbalance-button-param {
+            display: contents;
+        }
         .disbalance-button-param-label {
             color: black;
+        }
+
+        .disbalance-button-param-angle {
+            text-align: right;
+            min-width: 3em;
+        }
+
+        .disbalance-button-param-weight {
+            text-align: right;
+        }
+
+        .disbalance-button-param-vector {
+            text-align: right;
+            min-width: 5em;
         }
     }
 }

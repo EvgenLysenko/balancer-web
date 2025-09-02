@@ -21,4 +21,31 @@
             margin-bottom: 1.5em;
         }
     }
+
+    .drive-state-container {
+        box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.3);
+        border-radius: 0.5em;
+        padding: 0.5em;
+
+        .drive-state {
+            display: grid;
+            grid-template-columns: auto auto;
+            justify-content: space-between;
+            row-gap: 0.1em;
+            column-gap: 0.5em;
+
+            .drive-state-param {
+                display: contents;
+
+                .drive-state-param-title {
+                    text-align: left;
+                }
+
+                .drive-state-param-value {
+                    text-align: right;
+                    min-width: 2em;
+                }
+            }
+        }
+    }
 }

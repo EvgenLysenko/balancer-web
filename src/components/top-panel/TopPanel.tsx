@@ -33,31 +33,35 @@ const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angl
     return (
         <div className="top-panel-container">
             <div className="top-panel">
-                <div>
-                    <div>
-                        Angle: {isNaN(angle) ? "--" : angle.toString()}
-                    </div>
-                    <div>
-                        RPM: {isNaN(rpm) ? "--" : rpm.toString()}
+                <div className="drive-state-container">
+                    <div className="drive-state">
+                        <div className="drive-state-param">
+                            <div className="drive-state-param-title">Angle:</div>
+                            <div className="drive-state-param-value">{isNaN(angle) ? "--" : angle.toString()}</div>
+                        </div>
+                        <div className="drive-state-param">
+                            <div className="drive-state-param-title">RPM:</div>
+                            <div className="drive-state-param-value">{isNaN(rpm) ? "--" : rpm.toString()}</div>
+                        </div>
                     </div>
                 </div>
                 <DisbalanceStartButton
-                    label="Start"
+                    label="Zero Weight"
                     balance={step0}
                     rotationStartStage={BalancerRotationStartState.Zero}
                 />
                 <DisbalanceStartButton
-                    label="Start L"
+                    label="Left"
                     balance={step1}
                     rotationStartStage={BalancerRotationStartState.Left}
                 />
                 <DisbalanceStartButton
-                    label="Start R"
+                    label="Right"
                     balance={step2}
                     rotationStartStage={BalancerRotationStartState.Right}
                 />
                 <DisbalanceStartButton
-                    label="Start Test"
+                    label="Calculate"
                     balance={stepCalibration}
                     rotationStartStage={BalancerRotationStartState.Common}
                 />
