@@ -34,10 +34,12 @@ const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angl
         <div className="top-panel-container">
             <div className="top-panel">
                 <div>
-                    Angle: {isNaN(angle) ? "--" : angle.toString()}
-                </div>
-                <div>
-                    RPM: {isNaN(rpm) ? "--" : rpm.toString()}
+                    <div>
+                        Angle: {isNaN(angle) ? "--" : angle.toString()}
+                    </div>
+                    <div>
+                        RPM: {isNaN(rpm) ? "--" : rpm.toString()}
+                    </div>
                 </div>
                 <DisbalanceStartButton
                     label="Start"
@@ -54,27 +56,31 @@ const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angl
                     balance={step2}
                     rotationStartStage={BalancerRotationStartState.Right}
                 />
-                <Button
-                    label={chartRequested ? "Chart Requested" : "Request Chart"}
-                    onClick={chartRequested ? graphRequest : graphRequest }
-                />
                 <DisbalanceStartButton
                     label="Start Test"
                     balance={stepCalibration}
                     rotationStartStage={BalancerRotationStartState.Common}
-                />
-                <Button
-                    label={readingStarted ? "Reading started" : "Reading NO"}
                 />
                 <DisbalanceStartButton
                     label="Current"
                     balance={stepCurrent}
                     rotationStartStage={BalancerRotationStartState.Common}
                 />
-                <Button
-                    label={connected ? "Disconnect" : "Connect"}
-                    onClick={connected ? balancerDisconnect : balancerConnect}
-                />
+                <div className="top-panel-right-buttons">
+                    <div className="top-panel-connect-button-container">
+                        <Button
+                            label={connected ? "Disconnect" : "Connect"}
+                            onClick={connected ? balancerDisconnect : balancerConnect}
+                        />
+                    </div>
+                    <Button
+                        label={readingStarted ? "Reading started" : "Reading NO"}
+                    />
+                    <Button
+                        label={chartRequested ? "Chart Requested" : "Request Chart"}
+                        onClick={chartRequested ? graphRequest : graphRequest }
+                    />
+                </div>
             </div>
         </div>
     );

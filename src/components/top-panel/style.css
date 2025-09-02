@@ -10,5 +10,15 @@
             justify-content: space-between;
             gap: 1em;
         }
+
+        .top-panel-right-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+        }
+
+        .top-panel-connect-button-container {
+            margin-bottom: 1.5em;
+        }
     }
 }

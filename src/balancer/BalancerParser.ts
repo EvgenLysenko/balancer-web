@@ -263,10 +263,11 @@ export class BalancerParser implements IDriveState
         this.testDriveState("$BAL,DR,0,-234", false, -234, NaN);
         this.testDriveState("$BAL,DR,1,-234,", true, -234, NaN);
         this.testDriveState("$BAL,DR,0,-234*AA", false, -234, NaN);
+        this.testDriveState("$BAL,DR,1,-23,12345678*AA", false, -234, NaN);
 
-        const buf = this.encoder.encode("$BAL,STEP,0,-234,1234567890*AA");
-        this.parser.parseStart(buf, buf.length, 9);
+        const buf = this.encoder.encode("$BAL,STEP,0,-234,1234567890,1234567891,-12,-123,345678,14,-345678*AA");
+        this.parser.parseStart(buf, buf.length, 10);
         this.parseStep();
-        console.log("TEST: $BAL,STEP,0,-234,1234567890*AA", this.balancer.step0);
+        console.log("TEST: $BAL,STEP,0,-234,1234567890,1234567891,-12*AA", this.balancer.step0);
     }
 }
