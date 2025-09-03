@@ -10,8 +10,10 @@ type IProps = {
 
 export const Input = ({ onChange, label, enabled }: IProps) => {
     return (
-        <input type='input' className={enabled === false ? "balance-input disabled" : "balance-input"}
-        onInput={onChange ? (e: any) => onChange(e.target.value) : undefined}
+        <input
+            className={enabled === false ? "balance-input disabled" : "balance-input"}
+            type='input'
+            onInput={onChange ? (e: any) => onChange(e.target.value) : undefined}
         />
     );
 };

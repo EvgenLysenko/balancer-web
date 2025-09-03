@@ -188,14 +188,14 @@ function* handleBalancerStarted(action: PayloadAction<TypeConstant, IBalancerSta
 
 function* handleBalancerRotationStart(action: PayloadAction<TypeConstant, IBalancerState>): Generator {
     try {
-        const { connected, startRotationAngle, startRotationWeight } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
+        const { connected, startRotationLeftAngle, startRotationLeftWeight, startRotationRightAngle, startRotationRightWeight } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         if (!connected)
             return;
 
         const { serialWriter } = (yield select((state: IApplicationState) => state.balancer)) as IBalancerState;
         if (serialWriter) {
 
-            const command = "$BAL,START," + action.payload.rotationStartStage + "," + startRotationAngle + "," + startRotationWeight + "\n";
+            const command = "$BAL,START," + action.payload.rotationStartStage + "," + startRotationLeftAngle + "," + startRotationLeftWeight + "," + startRotationRightAngle + "," + startRotationRightWeight + "\n";
             yield call(makeWrite, serialWriter, command);
         }
 

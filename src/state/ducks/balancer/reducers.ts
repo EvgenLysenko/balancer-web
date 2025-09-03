@@ -18,8 +18,10 @@ export const initialState: IBalancerState = {
     stepCalibration: new BalanceStep(),
     stepCurrent: new BalanceStep(),
     rotationStartStage: undefined as unknown as BalancerRotationStartState,
-    startRotationAngle: 0,
-    startRotationWeight: 0,
+    startRotationLeftAngle: 0,
+    startRotationLeftWeight: 0,
+    startRotationRightAngle: 0,
+    startRotationRightWeight: 0,
 }
 
 export const balancerReducer = (
@@ -59,8 +61,10 @@ export const balancerReducer = (
         case BalancerActionTypes.BALANCER_ROTATION_START: {
             return { ...state,
                 rotationStartStage: action.payload.rotationStartStage,
-                startRotationAngle: action.payload.startRotationAngle,
-                startRotationWeight: action.payload.startRotationWeight,
+                startRotationLeftAngle: action.payload.startRotationLeftAngle,
+                startRotationLeftWeight: action.payload.startRotationLeftWeight,
+                startRotationRightAngle: action.payload.startRotationRightAngle,
+                startRotationRightWeight: action.payload.startRotationRightWeight,
             };
         }
         case BalancerActionTypes.BALANCER_UPDATE_DRIVE_STATE: {

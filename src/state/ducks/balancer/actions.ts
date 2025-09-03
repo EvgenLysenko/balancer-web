@@ -39,8 +39,14 @@ export const balancerReadingStopped = () => {
     return action(BalancerActionTypes.BALANCER_READING_STOPPED);
 }
 
-export const balancerRotationStart = (rotationStartStage: BalancerRotationStartState, angle: number, weight: number) => {
-    return action(BalancerActionTypes.BALANCER_ROTATION_START, { rotationStartStage, startRotationAngle: angle, startRotationWeight: weight });
+export const balancerRotationStart = (rotationStartStage: BalancerRotationStartState, lAngle: number, lWeight: number, rAngle: number, rWeight: number) => {
+    return action(BalancerActionTypes.BALANCER_ROTATION_START, {
+        rotationStartStage,
+        startRotationLeftAngle: lAngle,
+        startRotationLeftWeight: lWeight,
+        startRotationRightAngle: rAngle,
+        startRotationRightWeight: rWeight,
+     });
 }
 
 export const balancerStepUpdate = (disbalanceChangeTime: number, step0: IBalanceStep, step1: IBalanceStep, step2: IBalanceStep, stepCalibration: IBalanceStep, stepCurrent: IBalanceStep) => {
