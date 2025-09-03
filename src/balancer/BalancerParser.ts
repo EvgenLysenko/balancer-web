@@ -38,7 +38,8 @@ export class BalancerParser implements IDriveState
     }
 
     public chartX: number[] = Array.from({ length: BalancerParser.chartSize }, (value, index) => index);
-    public chartY: number[] = new Array<number>(BalancerParser.chartSize);
+    public chartLeft: number[] = new Array<number>(BalancerParser.chartSize);
+    public chartRight: number[] = new Array<number>(BalancerParser.chartSize);
     public chartRequested: boolean = false;
     public chartReceivedIdx: number = 0;
     protected chartUpdatedTime: number = 0;
@@ -47,8 +48,12 @@ export class BalancerParser implements IDriveState
         return this.chartX;
     }
 
-    public chartGetY(): number[] {
-        return this.chartY;
+    public chartGetLeft(): number[] {
+        return this.chartLeft;
+    }
+
+    public chartGetRight(): number[] {
+        return this.chartRight;
     }
 
     public chartRequest() {
@@ -120,7 +125,49 @@ export class BalancerParser implements IDriveState
                 let value = this.parser.parseNumber(NaN);
 
                 if (idx >= 0 && idx < this.chartX.length) {
-                    this.chartY[idx] = value;
+                    this.chartLeft[idx] = value;
+                    this.chartUpdatedTime = Date.now();
+                    ++idx;
+                }
+                else {
+                    break;
+                }
+            }
+
+            //console.log(idx, value);
+        }
+        else if (BalancerParser.checkStartWith(buf, size, "$BAL,CHART,L,")) {
+            const str = this.decoder.decode(buf);
+            console.log(str);
+            this.parser.parseStart(buf, size, 13);
+
+            let idx = this.parser.parseNumber(NaN);
+            while (this.parser.hasNext) {
+                let value = this.parser.parseNumber(NaN);
+
+                if (idx >= 0 && idx < this.chartX.length) {
+                    this.chartLeft[idx] = value;
+                    this.chartUpdatedTime = Date.now();
+                    ++idx;
+                }
+                else {
+                    break;
+                }
+            }
+
+            //console.log(idx, value);
+        }
+        else if (BalancerParser.checkStartWith(buf, size, "$BAL,CHART,R,")) {
+            const str = this.decoder.decode(buf);
+            console.log(str);
+            this.parser.parseStart(buf, size, 13);
+
+            let idx = this.parser.parseNumber(NaN);
+            while (this.parser.hasNext) {
+                let value = this.parser.parseNumber(NaN);
+
+                if (idx >= 0 && idx < this.chartX.length) {
+                    this.chartRight[idx] = value;
                     this.chartUpdatedTime = Date.now();
                     ++idx;
                 }

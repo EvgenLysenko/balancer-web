@@ -5,8 +5,8 @@ const length = 255;
 
 export const initialState: IGraphState = {
     x: Array.from({ length: length }, (value, index) => index),
-    y: Array.from({ length: length }, (value, index) => NaN),
-    //y: Array.from({ length: length }, (value, index) => index).map((value) => Math.sin(value / 180 * 3.14)),
+    chartLeft: Array.from({ length: length }, (value, index) => NaN),
+    chartRight: Array.from({ length: length }, (value, index) => NaN),
     tmp: 0,
     updateTime: 0,
     chartRequested: false,
@@ -24,7 +24,8 @@ export const graphReducer = (
         }
         case GraphActionTypes.GRAPH_UPDATED: {
             return { ...state,
-                y: action.payload.y,
+                chartLeft: action.payload.chartLeft,
+                chartRight: action.payload.chartRight,
                 tmp: action.payload.tmp,
             };
         }
@@ -32,7 +33,8 @@ export const graphReducer = (
             console.log(action.payload, action.payload.updateTime);
             return { ...state,
                 x: action.payload.x,
-                y: action.payload.y,
+                chartLeft: action.payload.chartLeft,
+                chartRight: action.payload.chartRight,
                 updateTime: action.payload.updateTime,
             };
         }

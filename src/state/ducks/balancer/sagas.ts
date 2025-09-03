@@ -6,7 +6,7 @@ import { balancerReadingStopped, balancerStarted, balancerStepUpdate, balancerSt
 import ErrorUtils from "../../../utils/ErrorUtils";
 import { BalancerParser } from "../../../balancer/BalancerParser";
 import { IGraphState } from "../graph/types";
-import { chartUpdated } from "../graph/actions";
+import { chartUpdated, graphRequest } from "../graph/actions";
 import { BalanceStep, Balancer } from "../../../balancer/Balancer";
 
 export const balancer = new Balancer();
@@ -138,7 +138,11 @@ function* handleBalancerCheckUpdated(action: PayloadAction<TypeConstant, IBalanc
         const { updateTime } = (yield select((state: IApplicationState) => state.graph)) as IGraphState;
         if (updateTime !== balancerParser.getChartUpdateTime()) {
             console.log("chartUpdated", updateTime, balancerParser.getChartUpdateTime());
-            yield put(chartUpdated(balancerParser.getChartUpdateTime(), balancerParser.chartGetX(), [...balancerParser.chartGetY()]));
+            yield put(chartUpdated(balancerParser.getChartUpdateTime(), balancerParser.chartGetX(), [...balancerParser.chartGetLeft()], [...balancerParser.chartGetRight()]));
+        }
+
+        if (updateTime + 1000 < Date.now()) {
+            yield put(graphRequest());
         }
         //yield put(balancerUpdateValues(balancerParser.value1, balancerParser.value2, balancerParser.value3));
     }
