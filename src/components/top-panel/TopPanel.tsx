@@ -24,11 +24,10 @@ interface IProps {
     balancerConnect: () => void;
     graphRequest: () => void;
     balancerDisconnect: () => void;
-    balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => void;
 }
 
 const TopPanel = ({ connected, readingStarted, chartRequested, isIdle, rpm, angle, step0, step1, step2, stepCalibration, stepCurrent,
-    balancerConnect, balancerDisconnect, graphRequest, balancerRotationStart
+    balancerConnect, balancerDisconnect, graphRequest
 }: IProps) => {
     return (
         <div className="top-panel-container">
@@ -111,7 +110,6 @@ const mapDispatchToProps = (dispatch: any) => {
         balancerConnect: () => dispatch(balancerConnect()),
         graphRequest: () => dispatch(graphRequest()),
         balancerDisconnect: () => dispatch(balancerDisconnect()),
-        balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => dispatch(balancerRotationStart(rotationStartStage)),
     };
 };
 

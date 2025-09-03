@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import { BalancerRotationStartState, IBalanceStep, IDisbalance } from '../../balancer/Balancer';
 import { Button } from '../controls/button/Button';
@@ -6,18 +6,22 @@ import { IApplicationState } from '../../state/ducks';
 import { balancerRotationStart } from '../../state/ducks/balancer/actions';
 
 import './style.scss';
+import { Input } from '../controls/input/Input';
 
 type IProps = {
     label?: string;
     rotationStartStage: BalancerRotationStartState;
     isIdle: boolean;
     balance: IBalanceStep;
-    balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => void;
+    balancerRotationStart: (rotationStartStage: BalancerRotationStartState, angle: number, weight: number) => void;
 };
 
 const DisbalanceStartButton = ({ label, rotationStartStage, isIdle, balance, balancerRotationStart }: IProps) => {
-    const onButtonClick = useCallback(() => balancerRotationStart(rotationStartStage)
-        , [rotationStartStage, balancerRotationStart]
+    const [angle, setAngle] = useState(0);
+    const [weight, setWeight] = useState(0);
+
+    const onButtonClick = useCallback(() => balancerRotationStart(rotationStartStage, angle, weight)
+        , [rotationStartStage, balancerRotationStart, angle, weight]
     );
 
     const title = useMemo(() => {
@@ -27,6 +31,18 @@ const DisbalanceStartButton = ({ label, rotationStartStage, isIdle, balance, bal
             return rotationStartStage.toString();
     }, [rotationStartStage]);
 
+    const onAngleChanged = useCallback((value: string) => {
+        const angle = Number.parseFloat(value);
+        setAngle(Number.parseFloat(value));
+        console.log(angle);
+    }, [setAngle]);
+
+    const onWeightChanged = useCallback((value: string) => {
+        const weight = Number.parseFloat(value);
+        setWeight(Number.parseFloat(value));
+        console.log(weight);
+    }, [setWeight]);
+
     return (
         <div className="disbalance-button">
             <div className="disbalance-button-title">{label ?? title}</div>
@@ -35,6 +51,12 @@ const DisbalanceStartButton = ({ label, rotationStartStage, isIdle, balance, bal
                 onClick={onButtonClick}
                 enabled={isIdle}
             />
+            <div className="disbalance-button-params">
+            <div className="disbalance-button-param">
+                <Input onChange={onAngleChanged} />
+                <Input onChange={onWeightChanged} />
+            </div>
+            </div>
             <div className="disbalance-button-params-title">Disbalance (angle, W)</div>
             <div className="disbalance-button-params">
                 <div className="disbalance-button-param">
@@ -70,7 +92,7 @@ const mapStateToProps = (state: IApplicationState) => {
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        balancerRotationStart: (rotationStartStage: BalancerRotationStartState) => dispatch(balancerRotationStart(rotationStartStage)),
+        balancerRotationStart: (rotationStartStage: BalancerRotationStartState, angle: number, weight: number) => dispatch(balancerRotationStart(rotationStartStage, angle, weight)),
     };
 };
 

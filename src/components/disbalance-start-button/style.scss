@@ -38,6 +38,10 @@
 
         .disbalance-button-param {
             display: contents;
+
+            input {
+                width: 5em;
+            }
         }
         .disbalance-button-param-label {
             color: black;

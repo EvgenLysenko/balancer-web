@@ -14,6 +14,8 @@ export interface IBalancerState extends IDriveState {
     stepCalibration: IBalanceStep;
     stepCurrent: IBalanceStep;
     rotationStartStage: BalancerRotationStartState;
+    startRotationAngle: number;
+    startRotationWeight: number;
 }
 
 export const BalancerActionTypes = {
