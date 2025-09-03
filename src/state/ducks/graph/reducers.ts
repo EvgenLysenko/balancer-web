@@ -7,7 +7,6 @@ export const initialState: IGraphState = {
     x: Array.from({ length: length }, (value, index) => index),
     chartLeft: Array.from({ length: length }, (value, index) => NaN),
     chartRight: Array.from({ length: length }, (value, index) => NaN),
-    tmp: 0,
     updateTime: 0,
     chartRequested: false,
 }
@@ -26,7 +25,6 @@ export const graphReducer = (
             return { ...state,
                 chartLeft: action.payload.chartLeft,
                 chartRight: action.payload.chartRight,
-                tmp: action.payload.tmp,
             };
         }
         case GraphActionTypes.CHART_UPDATED: {

@@ -2,7 +2,6 @@ export interface IGraphState {
     x: number[];
     chartLeft: number[];
     chartRight: number[];
-    tmp: number;
     updateTime: number;
     chartRequested: boolean;
 }
